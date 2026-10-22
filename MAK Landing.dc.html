@@ -2055,7 +2055,6 @@ const SCENARIOS = [
 ];
 // Textos dobles [con IA en vivo, en modo respaldo]: nunca se dice «IA» si responde el motor de reglas.
 const LAB_MODES = [
-  ['free', ['Conversa con MAK AI', 'Escribe a tu manera'], ['Conversa', 'Escribe tú'], ['IA real · negocio y datos ficticios', 'Modo respaldo · respuestas guiadas por reglas']],
   ['system', 'Ver cómo funciona', 'Cómo funciona', 'Así trabaja MAK AI por dentro · panel simulado']
 ];
 const LAB_TABS = [['need', 'Necesidad'], ['crm', 'Registro'], ['actions', 'Acciones'], ['eval', 'Evaluación']];
@@ -2097,7 +2096,7 @@ class Component extends DCLogic {
     mobile: false, scrolled: false, menuOpen: false, active: '', faqOpen: -1, reduced: false,
     coreNodes: null, bizTab: 'resumen', bizOpen: false,
     scenario: 'dental', chats: Object.fromEntries(SCENARIOS.map(x => [x.id, freshChat(x.id)])), chatInput: '',
-    labMode: 'free', labTab: 'need', labPanelOpen: false,
+    labMode: 'system', labTab: 'need', labPanelOpen: true,
     detail: '', caps: {}, flowStep: 0, flowPlaying: false, flowN: 0, diag: '', diagN: 0, proj: 0, device: 'desk',
     product: '', form: emptyForm(), error: '', sending: false, sent: '', waLeadUrl: '',
     voiceOK: false, recording: false, recT: 0, voiceErr: '', demoSeen: false, fabTip: false
@@ -2616,7 +2615,7 @@ class Component extends DCLogic {
       scenarios: SCENARIOS.map((x, i) => ({ ...x, ic: SCENARIOS.map((_, j) => j === i), on: x.id === s.scenario, pick: () => this.setState({ scenario: x.id, chatInput: '' }, this.scrollChat) })),
       labMode: s.labMode, isSystem: s.labMode === 'system',
       labModes: LAB_MODES.map(([id, label, short]) => ({ label: pk(label), short: pk(short), on: s.labMode === id, pick: () => this.setLabMode(id) })),
-      labModeNote: s.labMode === 'free' && !chat.source ? 'Negocio y datos ficticios' : pk((LAB_MODES.find(x => x[0] === s.labMode) || [])[3]),
+      labModeNote: pk((LAB_MODES.find(x => x[0] === s.labMode) || [])[3]),
       chatSource: chat.busy ? (chat.phase === 'listen' ? 'Escuchando tu nota de voz…' : 'Escribiendo…') : chat.source === 'ai' ? 'IA en vivo · negocio ficticio' : chat.source === 'rules' ? 'Modo respaldo · respuestas guiadas' : 'Asistente virtual · negocio ficticio',
       labFoot: live ? 'Entorno de demostración con empresas y datos ficticios. Las respuestas las genera un modelo de IA (Google Gemini, vía OpenRouter): tus mensajes y notas de voz se envían solo para generarlas y MAK no los guarda. El micrófono solo se usa mientras grabas. No escribas datos personales reales. Las funcionalidades e integraciones de cada implementación pueden variar.' : 'Entorno de demostración con empresas y datos ficticios. Las respuestas son guiadas por reglas y corren en tu navegador: nada se envía ni se guarda. Las funcionalidades e integraciones de cada implementación pueden variar.',
       labPanelOpen: s.labPanelOpen, togglePanel: () => this.setState({ labPanelOpen: !s.labPanelOpen }), panelToggleLabel: s.labPanelOpen ? 'Ocultar' : 'Ver',
