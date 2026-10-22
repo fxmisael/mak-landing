@@ -2115,9 +2115,7 @@ class Component extends DCLogic {
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('keydown', this.onKey);
     // content-visibility estima el alto de las secciones aún no vistas: tras saltar a un #ancla se realinea si quedó desplazado.
-    this.onAnchor = e => {
-      const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
-      const el = document.getElementById(a.getAttribute('href').slice(1)); if (!el) return;
+    this.alignTo = el => {
       let tries = 0;
       const fix = () => {
         window.removeEventListener('scrollend', fix); clearTimeout(this.anchT);
@@ -2127,6 +2125,20 @@ class Component extends DCLogic {
       };
       window.addEventListener('scrollend', fix, { once: true }); clearTimeout(this.anchT); this.anchT = setTimeout(fix, 1600);
     };
+    this.onAnchor = e => {
+      const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+      const el = document.getElementById(a.getAttribute('href').slice(1)); if (!el) return;
+      this.alignTo(el);
+    };
+    // Un enlace compartido (maksistemas.com/#nosotros): el runtime pinta la página después de la carga, así que el navegador
+    // no encuentra el ancla y se queda arriba. Se salta a la sección al montar y cuando cambia el # (atrás/adelante o URL editada).
+    this.goHash = () => {
+      let el = null; try { el = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (_) {}
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'instant', block: 'start' }); this.alignTo(el);
+    };
+    window.addEventListener('hashchange', this.goHash);
+    if (location.hash.length > 1) { this.hashT = setTimeout(this.goHash, 60); window.addEventListener('load', this.goHash, { once: true }); }
     document.addEventListener('click', this.onAnchor);
     this.setState({ reduced, mobile: document.documentElement.clientWidth < 860 }, () => { this.setupVideo(); this.handleScroll(); this.setupCore(); });
     this.setupReveal(reduced);
@@ -2149,7 +2161,8 @@ class Component extends DCLogic {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('keydown', this.onKey);
-    document.removeEventListener('click', this.onAnchor); clearTimeout(this.anchT);
+    document.removeEventListener('click', this.onAnchor); clearTimeout(this.anchT); clearTimeout(this.hashT);
+    window.removeEventListener('hashchange', this.goHash); window.removeEventListener('load', this.goHash);
     if (this.syncProj) document.removeEventListener('visibilitychange', this.syncProj);
     if (this.onMove) window.removeEventListener('pointermove', this.onMove);
     if (this.onVis) document.removeEventListener('visibilitychange', this.onVis);
