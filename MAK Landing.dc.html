@@ -2289,11 +2289,11 @@ class Component extends DCLogic {
         const c = this.core, i = this.nodeRefs.findIndex(r => r.current === a);
         if (this.state.reduced || !c || !c.npos || !c.npos[i]) return;
         e.preventDefault(); e.stopPropagation();
-        const [bx, by] = c.npos[i], n = c.W < 860 ? 26 : 44;
+        const [bx, by] = c.npos[i], n = c.W < 860 ? 34 : 60;
         c.boom = { x: bx, y: by, t0: performance.now() };
-        c.B = Array.from({ length: n }, () => { const an = Math.random() * 6.283, sp = 160 + Math.random() * 420; return { x: bx, y: by, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp, l: 1, s: 0.8 + Math.random() * 1.6 }; });
+        c.B = Array.from({ length: n }, () => { const an = Math.random() * 6.283, sp = 90 + Math.random() * 300; return { x: bx, y: by, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp, l: 1, s: 0.8 + Math.random() * 1.6 }; });
         this.kickCore();
-        clearTimeout(this.boomT); this.boomT = setTimeout(() => { a.dataset.go = '1'; a.click(); }, 430);
+        clearTimeout(this.boomT); this.boomT = setTimeout(() => { a.dataset.go = '1'; a.click(); }, 700);
       });
     }
     if (!this.state.reduced && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
@@ -2306,10 +2306,10 @@ class Component extends DCLogic {
   drawCore = now => {
     const c = this.core; if (!c || this.dead) return;
     c.raf = 0;
-    if (c.W < 860 && !this.state.reduced && now - (c.last || 0) < 32) { if (c.visible && !document.hidden) c.raf = requestAnimationFrame(this.drawCore); return; }
+    if (c.low && c.W < 860 && !this.state.reduced && now - (c.last || 0) < 32) { if (c.visible && !document.hidden) c.raf = requestAnimationFrame(this.drawCore); return; }
     c.last = now;
     const { ctx, W, H, dpr, cx, cy, R } = c, still = this.state.reduced, t = still ? 0 : (now - c.t0) / 1000;
-    c.mx += (c.tx - c.mx) * 0.06; c.my += (c.ty - c.my) * 0.06;
+    c.mx += (c.tx - c.mx) * 0.035; c.my += (c.ty - c.my) * 0.035;
     const k = c.k, fade = 1 - k * 0.8, shrink = 1 - k * 0.3;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
@@ -2318,7 +2318,7 @@ class Component extends DCLogic {
     ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
     // salto al hiperespacio: al deslizar rápido las estrellas se estiran en líneas (hacia afuera al bajar, hacia adentro al subir)
     const sy = window.scrollY || 0, dv = sy - (c.wsy == null ? sy : c.wsy); c.wsy = sy;
-    c.wv = (c.wv || 0) + (dv - (c.wv || 0)) * 0.2;
+    c.wv = (c.wv || 0) + (dv - (c.wv || 0)) * 0.1;
     const warp = still ? 0 : Math.min(1, Math.max(0, (Math.abs(c.wv) - 2) / (W < 860 ? 24 : 30))), wdir = c.wv >= 0 ? 1 : -1;
     if (!c.WS) c.WS = Array.from({ length: W < 860 ? 45 : c.low ? 60 : 100 }, () => ({ x: Math.random() * W, y: Math.random() * H, z: 0.3 + Math.random() * 0.7, h: Math.random() }));
     {
@@ -2327,7 +2327,7 @@ class Component extends DCLogic {
       for (const q of c.WS) {
         let dx = q.x - cx, dy = q.y - cy, d = Math.hypot(dx, dy) || 1;
         if (warp > 0.01) {
-          const st = warp * (6 + d * 0.05) * q.z * wdir; q.x += dx / d * st; q.y += dy / d * st;
+          const st = warp * (3 + d * 0.03) * q.z * wdir; q.x += dx / d * st; q.y += dy / d * st;
           dx = q.x - cx; dy = q.y - cy; d = Math.hypot(dx, dy) || 1;
           if (wdir > 0 && (q.x < -40 || q.x > W + 40 || q.y < -40 || q.y > H + 40)) { const an = Math.random() * 6.283, rr = 20 + Math.random() * Rmax * 0.25; q.x = cx + Math.cos(an) * rr; q.y = cy + Math.sin(an) * rr * 0.6; continue; }
           if (wdir < 0 && d < 24) { const an = Math.random() * 6.283; q.x = cx + Math.cos(an) * Rmax; q.y = cy + Math.sin(an) * Rmax * 0.7; continue; }
@@ -2345,12 +2345,12 @@ class Component extends DCLogic {
     // galaxia: brazos en espiral de polvo estelar girando alrededor del núcleo
     if (!c.G) c.G = Array.from({ length: W < 860 ? 70 : c.low ? 110 : 190 }, (_, i) => ({ arm: i % 3, d: Math.pow(Math.random(), 0.7), j: (Math.random() - 0.5) * 0.5, s: 0.5 + Math.random() * 1.3, h: Math.random() }));
     {
-      const gs = (still ? 0 : t * 0.05 + c.sv * 0.9), GR = Math.min(W, H * 1.6) * 0.62 * shrink;
+      const gs = (still ? 0 : t * 0.03 + c.sv * 0.35), GR = Math.min(W, H * 1.6) * 0.62 * shrink;
       ctx.globalCompositeOperation = 'lighter';
       for (const q of c.G) {
         const r = 18 + q.d * GR, th = q.arm * 2.094 + q.d * 4.2 + q.j + gs * (1.4 - q.d);
         const x = cx + Math.cos(th) * r + c.mx * 8 * q.d, y = cy + Math.sin(th) * r * 0.42 + c.my * 6 * q.d;
-        const al = (1 - q.d * 0.8) * 0.8 * fade * (0.6 + 0.4 * Math.sin(t * 2 + q.h * 20));
+        const al = (1 - q.d * 0.8) * 0.8 * fade * (0.6 + 0.4 * Math.sin(t * 1.1 + q.h * 20));
         ctx.fillStyle = q.h < 0.18 ? 'rgba(170,140,255,' + al.toFixed(3) + ')' : 'rgba(120,195,255,' + al.toFixed(3) + ')';
         if (warp > 0.05) { const k = warp * 0.22 * wdir; ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = q.s * 1.2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - (x - cx) * k, y - (y - cy) * k); ctx.stroke(); }
         else { ctx.beginPath(); ctx.arc(x, y, q.s, 0, 6.283); ctx.fill(); }
@@ -2359,21 +2359,21 @@ class Component extends DCLogic {
     }
     // partículas que dan vueltas dentro de los aros (galaxia): el scroll las acelera y las recoge hacia el núcleo
     const u = c.u * shrink, RINGS = [[368, 136, -22], [354, 130, 25]];
-    c.sv += (((window.scrollY || 0) * 0.0042) - c.sv) * 0.12;
-    const spin = still ? 0 : t + c.sv * 4.2, P = [];
+    c.sv += (((window.scrollY || 0) * 0.0042) - c.sv) * 0.05;
+    const spin = still ? 0 : t + c.sv * 1.6, P = [];
     let bm = null;
     if (c.boom) {
       const ba = (now - c.boom.t0) / 1000;
-      if (ba > 1.8) c.boom = null;
-      else bm = { x: c.boom.x, y: c.boom.y, R: W < 860 ? 160 : 260, f: (W < 860 ? 45 : 80) * (ba < 0.12 ? ba / 0.12 : Math.exp(-(ba - 0.12) * 2.6)), a: ba };
+      if (ba > 2.6) c.boom = null;
+      else bm = { x: c.boom.x, y: c.boom.y, R: W < 860 ? 170 : 280, f: (W < 860 ? 42 : 75) * (ba < 0.2 ? Math.sin(ba / 0.2 * 1.5708) : Math.exp(-(ba - 0.2) * 1.6)), a: ba };
     }
     for (const p of c.pts) {
-      const [A, B, th] = RINGS[p.ring], ang = p.a + p.w * spin * 3;
+      const [A, B, th] = RINGS[p.ring], ang = p.a + p.w * spin * 1.1;
       const ca = Math.cos(ang), sa = Math.sin(ang), rr = 1 + p.off / 130;
       const ex = A * ca * rr, ey = B * sa * rr + p.v * 6 * ca, tr = th * Math.PI / 180, ct = Math.cos(tr), st = Math.sin(tr);
       const dep = (sa + 1) / 2;                       // 0 = fondo, 1 = frente
       const z = 0.4 + dep * 0.6;
-      const tx = ang - p.w * 0.12, ex2 = A * Math.cos(tx) * rr, ey2 = B * Math.sin(tx) * rr + p.v * 6 * Math.cos(tx);
+      const tx = ang - p.w * 0.13, ex2 = A * Math.cos(tx) * rr, ey2 = B * Math.sin(tx) * rr + p.v * 6 * Math.cos(tx);
       let px = cx + (ex * ct - ey * st) * u + c.mx * 14 * z, py = cy + (ex * st + ey * ct) * u + c.my * 9 * z, bx = 0, by = 0;
       if (bm) { const ddx = px - bm.x, ddy = py - bm.y, dd = Math.hypot(ddx, ddy) || 1, pu = bm.f * Math.max(0, 1 - dd / bm.R); bx = ddx / dd * pu; by = ddy / dd * pu; }
       P.push({ x: px + bx, y: py + by,
@@ -2390,44 +2390,65 @@ class Component extends DCLogic {
     for (const q of P) {
       const al = (0.25 + 0.75 * q.z) * fade, sz = q.p.sz * (0.7 + 0.5 * q.z);
       if (!still) { ctx.strokeStyle = 'rgba(120,200,255,' + (al * 0.45).toFixed(3) + ')'; ctx.lineWidth = sz; ctx.beginPath(); ctx.moveTo(q.x2, q.y2); ctx.lineTo(q.x, q.y); ctx.stroke(); }
+      if (q.p.moon && !still) {
+        const gl = Math.pow(Math.max(0, Math.sin(t * 0.7 + q.p.a * 5)), 14) * fade * q.z;
+        if (gl > 0.03) {
+          ctx.globalCompositeOperation = 'lighter';
+          const Ls = sz * (10 + 12 * gl);
+          for (const [vx, vy] of [[1, 0], [0, 1]]) {
+            const gg = ctx.createLinearGradient(q.x - vx * Ls, q.y - vy * Ls, q.x + vx * Ls, q.y + vy * Ls);
+            gg.addColorStop(0, 'rgba(160,220,255,0)'); gg.addColorStop(0.5, 'rgba(235,248,255,' + (0.9 * gl).toFixed(3) + ')'); gg.addColorStop(1, 'rgba(160,220,255,0)');
+            ctx.strokeStyle = gg; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(q.x - vx * Ls, q.y - vy * Ls); ctx.lineTo(q.x + vx * Ls, q.y + vy * Ls); ctx.stroke();
+          }
+          ctx.globalCompositeOperation = 'source-over';
+        }
+      }
       if (q.p.moon) { const g2 = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, sz * 5); g2.addColorStop(0, 'rgba(190,230,255,' + (al * 0.55).toFixed(3) + ')'); g2.addColorStop(1, 'rgba(10,155,245,0)'); ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(q.x, q.y, sz * 5, 0, 6.283); ctx.fill(); }
       ctx.fillStyle = 'rgba(210,238,255,' + Math.min(1, al).toFixed(3) + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, sz, 0, 6.283); ctx.fill();
     }
     ctx.lineWidth = 1;
-    // meteoritos color fuego: caen en diagonal, sueltan chispas; el scroll rápido dispara ráfagas
+    // meteoritos de fuego: entran por arriba, por la izquierda o por la derecha, lentos, con cola larga en capas y brasas que flotan
     if (!still) {
       const dt = Math.min(0.05, (now - (c.lt || now)) / 1000); c.lt = now;
       const vel = Math.abs((window.scrollY || 0) - (c.lsy || 0)); c.lsy = window.scrollY || 0;
-      c.M = c.M || []; c.E = c.E || []; c.nextM = c.nextM || now + 900;
-      const maxM = W < 860 ? 2 : 4;
-      const spawn = () => {
-        const fromR = Math.random() < 0.5, ang = (fromR ? 152 : 28) + (Math.random() * 18 - 9), sp = (W < 860 ? 520 : 760) + Math.random() * 520;
-        c.M.push({ x: fromR ? W * (0.55 + Math.random() * 0.6) : W * (-0.15 + Math.random() * 0.6), y: -40 - Math.random() * H * 0.25,
-                   vx: Math.cos(ang * Math.PI / 180) * sp, vy: Math.sin(ang * Math.PI / 180) * sp, len: (W < 860 ? 90 : 170) + Math.random() * 120, r: 1.8 + Math.random() * 1.6, life: 0 });
+      c.M = c.M || []; c.E = c.E || []; c.nextM = c.nextM || now + 1200;
+      const mob = W < 860, maxM = mob ? 2 : 3;
+      const spawn = big => {
+        const sd = Math.random(); let x, y, an;
+        if (sd < 0.45) { x = W * (0.08 + Math.random() * 0.84); y = -30; an = 90 + (Math.random() * 70 - 35); }
+        else if (sd < 0.72) { x = -30; y = H * Math.random() * 0.5; an = 14 + Math.random() * 34; }
+        else { x = W + 30; y = H * Math.random() * 0.5; an = 180 - (14 + Math.random() * 34); }
+        const sz = big ? 1.7 : 0.75 + Math.random() * 0.55, sp = (mob ? 150 : 210) + Math.random() * (mob ? 110 : 170), ar = an * Math.PI / 180;
+        c.M.push({ x, y, vx: Math.cos(ar) * sp, vy: Math.sin(ar) * sp, len: (mob ? 120 : 230) * sz + Math.random() * 60, r: (mob ? 1.5 : 2.1) * sz, sz, life: 0, fl: Math.random() * 6, em: 0 });
       };
-      if (now > c.nextM && c.M.length < maxM) { spawn(); c.nextM = now + 900 + Math.random() * 1800; }
-      if (vel > 60 && c.M.length < maxM + 2 && now - (c.burst || 0) > 700) { spawn(); spawn(); c.burst = now; }
-      ctx.globalCompositeOperation = 'lighter';
+      if (now > c.nextM && c.M.length < maxM) { spawn(Math.random() < 0.22); c.nextM = now + 2000 + Math.random() * 3200; }
+      if (vel > 80 && c.M.length < maxM + 1 && now - (c.burst || 0) > 2500) { spawn(true); c.burst = now; }
+      ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
       c.M = c.M.filter(m => {
-        m.x += m.vx * dt; m.y += m.vy * dt; m.life += dt;
+        m.vy += 14 * dt; m.x += m.vx * dt; m.y += m.vy * dt; m.life += dt;
         const v = Math.hypot(m.vx, m.vy), ux = m.vx / v, uy = m.vy / v, tx = m.x - ux * m.len, ty = m.y - uy * m.len;
+        const fin = Math.min(1, m.life / 0.35) * fade, fk = 1 + 0.12 * Math.sin(m.life * 28 + m.fl);
         const g = ctx.createLinearGradient(m.x, m.y, tx, ty);
-        g.addColorStop(0, 'rgba(255,245,210,' + (0.95 * fade).toFixed(3) + ')'); g.addColorStop(0.12, 'rgba(255,190,70,' + (0.85 * fade).toFixed(3) + ')');
-        g.addColorStop(0.45, 'rgba(255,95,20,' + (0.5 * fade).toFixed(3) + ')'); g.addColorStop(1, 'rgba(200,30,0,0)');
-        ctx.strokeStyle = g; ctx.lineCap = 'round';
-        ctx.lineWidth = m.r * 2.6; ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
-        ctx.lineWidth = m.r; ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - ux * m.len * 0.5, m.y - uy * m.len * 0.5); ctx.stroke();
-        const hg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 9);
-        hg.addColorStop(0, 'rgba(255,240,200,' + (0.9 * fade).toFixed(3) + ')'); hg.addColorStop(0.3, 'rgba(255,140,40,' + (0.45 * fade).toFixed(3) + ')'); hg.addColorStop(1, 'rgba(255,60,0,0)');
-        ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(m.x, m.y, m.r * 9, 0, 6.283); ctx.fill();
-        if (c.E.length < 160 && Math.random() < 0.8) c.E.push({ x: m.x - ux * 6, y: m.y - uy * 6, vx: m.vx * 0.08 + (Math.random() - 0.5) * 90, vy: m.vy * 0.08 + (Math.random() - 0.5) * 90, l: 1, s: 0.6 + Math.random() * 1.4 });
-        return m.x > -m.len - 60 && m.x < W + m.len + 60 && m.y < H + m.len + 60;
+        g.addColorStop(0, 'rgba(255,248,225,1)'); g.addColorStop(0.08, 'rgba(255,205,90,0.95)'); g.addColorStop(0.35, 'rgba(255,110,25,0.6)'); g.addColorStop(0.7, 'rgba(210,40,0,0.22)'); g.addColorStop(1, 'rgba(150,20,0,0)');
+        ctx.strokeStyle = g;
+        ctx.globalAlpha = 0.16 * fin; ctx.lineWidth = m.r * 7; ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
+        ctx.globalAlpha = 0.45 * fin; ctx.lineWidth = m.r * 3; ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - ux * m.len * 0.75, m.y - uy * m.len * 0.75); ctx.stroke();
+        ctx.globalAlpha = 0.95 * fin; ctx.lineWidth = m.r * 1.1; ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - ux * m.len * 0.4, m.y - uy * m.len * 0.4); ctx.stroke();
+        ctx.globalAlpha = 1;
+        const hr = m.r * 11 * fk, hg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, hr);
+        hg.addColorStop(0, 'rgba(255,250,230,' + (0.95 * fin).toFixed(3) + ')'); hg.addColorStop(0.18, 'rgba(255,190,80,' + (0.6 * fin).toFixed(3) + ')'); hg.addColorStop(0.5, 'rgba(255,80,10,' + (0.18 * fin).toFixed(3) + ')'); hg.addColorStop(1, 'rgba(255,40,0,0)');
+        ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(m.x, m.y, hr, 0, 6.283); ctx.fill();
+        m.em += dt * (mob ? 22 : 34) * m.sz;
+        while (m.em >= 1 && c.E.length < 240) { m.em -= 1; c.E.push({ x: m.x - ux * (4 + Math.random() * 14), y: m.y - uy * (4 + Math.random() * 14), vx: m.vx * 0.04 + (Math.random() - 0.5) * 36, vy: m.vy * 0.04 + (Math.random() - 0.5) * 36, l: 1, s: 0.5 + Math.random() * 1.3 * m.sz, k: 0.7 + Math.random() * 0.6 }); }
+        return m.x > -m.len - 80 && m.x < W + m.len + 80 && m.y < H + m.len + 80;
       });
+      const dr = Math.pow(0.96, dt * 60);
       c.E = c.E.filter(e => {
-        e.x += e.vx * dt; e.y += e.vy * dt; e.vy += 40 * dt; e.l -= dt * 1.6;
+        e.vx *= dr; e.vy = e.vy * dr + 18 * dt; e.x += e.vx * dt; e.y += e.vy * dt; e.l -= dt * 0.85 * e.k;
         if (e.l <= 0) return false;
-        ctx.fillStyle = 'rgba(255,' + Math.round(120 + 110 * e.l) + ',' + Math.round(40 * e.l) + ',' + (e.l * 0.8 * fade).toFixed(3) + ')';
-        ctx.beginPath(); ctx.arc(e.x, e.y, e.s * e.l, 0, 6.283); ctx.fill();
+        const l = e.l, gC = Math.round(70 + 170 * l), bC = Math.round(Math.max(0, l - 0.6) * 300);
+        ctx.fillStyle = 'rgba(255,' + gC + ',' + bC + ',' + (l * 0.85 * fade).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(e.x, e.y, e.s * (0.35 + l * 0.65), 0, 6.283); ctx.fill();
         return true;
       });
       ctx.globalCompositeOperation = 'source-over';
@@ -2443,13 +2464,37 @@ class Component extends DCLogic {
       if (W < 860) { const f = Math.max(0.35, Math.min(fx, fy)); A *= f; B *= f * 1.25; }
       else { A *= Math.max(0.5, fx); B *= Math.max(0.4, Math.min(fx, fy * 1.15)); }
       const dt2 = Math.min(0.05, (now - (c.nt || now)) / 1000); c.nt = now;
-      c.ns = (c.ns == null ? 1 : c.ns) + ((c.hold ? 0 : 1) - (c.ns == null ? 1 : c.ns)) * 0.06;
-      c.np = (c.np || 0) + (still ? 0 : dt2 * 0.16 * c.ns);
-      const base = c.np + c.sv * 1.6 + 1.9;
+      c.ns = (c.ns == null ? 1 : c.ns) + ((c.hold ? 0 : 1) - (c.ns == null ? 1 : c.ns)) * 0.04;
+      c.np = (c.np || 0) + (still ? 0 : dt2 * 0.085 * c.ns);
+      c.nsv = (c.nsv == null ? c.sv : c.nsv) + (c.sv - (c.nsv == null ? c.sv : c.nsv)) * 0.04;
+      const base = c.np + c.nsv * 0.7 + 1.9;
+      // zonas ocupadas por el texto del hero (titular y tarjeta): en escritorio los botones las cruzan rápido y desvanecidos,
+      // y pasan el resto del tiempo donde se ven. Un mapa (LUT) reparte el recorrido sin que se adelanten ni choquen.
+      if (now - (c.colT || 0) > 1000) {
+        const wr = c.cv.getBoundingClientRect();
+        c.rects = W < 860 ? [] : Array.from(document.querySelectorAll('.mak-hero-col')).map(e => { const r = e.getBoundingClientRect(); return [r.left - wr.left - 70, r.right - wr.left + 70, r.top - wr.top - 28, r.bottom - wr.top + 24]; });
+        c.colT = now;
+        const N = 360, wgt = new Float32Array(N);
+        for (let k = 0; k < N; k++) {
+          const a = k / N * 6.2832, xx = cx + A * Math.cos(a) * ct - B * Math.sin(a) * st, yy = cy + A * Math.cos(a) * st + B * Math.sin(a) * ct;
+          wgt[k] = c.rects.some(r => xx > r[0] && xx < r[1] && yy > r[2] && yy < r[3]) ? 0.12 : 1;
+        }
+        for (let pass = 0; pass < 3; pass++) { const cp = wgt.slice(); for (let k = 0; k < N; k++) { let sm = 0; for (let d = -12; d <= 12; d++) sm += cp[(k + d + N) % N]; wgt[k] = sm / 25; } }
+        const cum = new Float32Array(N + 1); for (let k = 0; k < N; k++) cum[k + 1] = cum[k] + wgt[k];
+        const inv = new Float32Array(N + 1); let k = 0;
+        for (let j = 0; j <= N; j++) { const tg = j / N * cum[N]; while (k < N - 1 && cum[k + 1] < tg) k++; const f = (tg - cum[k]) / ((cum[k + 1] - cum[k]) || 1); inv[j] = (k + f) / N * 6.2832; }
+        c.lut = inv;
+      }
+      const warpA = a0 => { if (!c.lut) return a0; const N = c.lut.length - 1, sN = (((a0 / 6.2832) % 1) + 1) % 1 * N, j = Math.floor(sN), f = sN - j; return c.lut[j] + (c.lut[j + 1] - c.lut[j]) * f; };
+      c.na = c.na || [];
       c.nodes.forEach((n, i) => {
-        const ang = base + i * 2.0944, ca = Math.cos(ang), sa = Math.sin(ang);
+        const tgA = warpA(base + i * 2.0944);
+        if (c.na[i] == null || still) c.na[i] = tgA;
+        else { let df = tgA - c.na[i]; df -= Math.round(df / 6.2832) * 6.2832; c.na[i] += df * 0.12; }
+        const ang = c.na[i], ca = Math.cos(ang), sa = Math.sin(ang);
         const exx = A * ca, eyy = B * sa, dep = (sa + 1) / 2;
-        const x0 = cx + exx * ct - eyy * st + ox, y0 = cy + exx * st + eyy * ct + oy;
+        const bob = still ? 0 : Math.sin(t * 0.9 + i * 2.1) * (W < 860 ? 2 : 4);
+        const x0 = cx + exx * ct - eyy * st + ox, y0 = cy + exx * st + eyy * ct + oy + bob;
         const mx = (x0 + cx) / 2, my = (y0 + cy) / 2, qx = mx - (cy - y0) * 0.18, qy = my + (cx - x0) * 0.18;
         // estela de luz detrás de cada botón, siguiendo el aro
         if (!still) {
@@ -2466,7 +2511,7 @@ class Component extends DCLogic {
         grad.addColorStop(0, 'rgba(58,168,219,' + (0.5 * fade * (0.5 + dep * 0.5)).toFixed(3) + ')'); grad.addColorStop(1, 'rgba(58,168,219,0)');
         ctx.strokeStyle = grad; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(qx, qy, cx, cy); ctx.stroke();
         if (!still) for (let j = 0; j < 2; j++) {
-          let u2 = (t * 0.25 + j / 2 + i * 0.17) % 1; if (i === 1) u2 = 1 - u2;
+          let u2 = (t * 0.14 + j / 2 + i * 0.17) % 1; if (i === 1) u2 = 1 - u2;
           const a = 1 - u2, px = a * a * x0 + 2 * a * u2 * qx + u2 * u2 * cx, py = a * a * y0 + 2 * a * u2 * qy + u2 * u2 * cy;
           const al = Math.sin(u2 * Math.PI) * 0.85 * fade;
           ctx.fillStyle = 'rgba(220,240,255,' + al.toFixed(3) + ')'; ctx.beginPath(); ctx.arc(px, py, 1.7, 0, 6.283); ctx.fill();
@@ -2475,27 +2520,39 @@ class Component extends DCLogic {
         const el = this.nodeRefs[i].current;
         if (el) {
           const sc = 0.84 + dep * 0.24;
-          el.style.transform = 'translate(-50%,-50%) translate(' + (x0 - n.x).toFixed(1) + 'px,' + (y0 - n.y).toFixed(1) + 'px) scale(' + sc.toFixed(3) + ')';
-          // en escritorio, si pasa por detrás del titular se desvanece para no ensuciar el texto
-          if (!c.col || now - (c.colT || 0) > 1000) { const ce = document.querySelector('.mak-hero-col'), wr = c.cv.getBoundingClientRect(); c.col = ce ? ce.getBoundingClientRect() : null; c.wr = wr; c.colT = now; }
-          const r0 = c.col, over = W >= 860 && r0 && x0 + c.wr.left > r0.left - 40 && x0 + c.wr.left < r0.right + 50 && y0 + c.wr.top > r0.top - 30 && y0 + c.wr.top < r0.bottom + 20;
-          c.fo = c.fo || [1, 1, 1]; c.fo[i] += ((over ? 0.12 : 1) - c.fo[i]) * 0.1;
+          el.style.transform = 'translate(-50%,-50%) translate3d(' + (x0 - n.x).toFixed(2) + 'px,' + (y0 - n.y).toFixed(2) + 'px,0) scale(' + sc.toFixed(3) + ')';
+          // en escritorio, si pasa por detrás del texto del hero se desvanece para no ensuciarlo
+          const over = (c.rects || []).some(r => x0 > r[0] + 30 && x0 < r[1] - 20 && y0 > r[2] && y0 < r[3]);
+          c.fo = c.fo || [1, 1, 1]; c.fo[i] += ((over ? 0.12 : 1) - c.fo[i]) * 0.06;
           el.style.opacity = ((0.62 + dep * 0.38) * c.fo[i]).toFixed(3);
           el.style.pointerEvents = c.fo[i] < 0.5 ? 'none' : '';
           el.style.zIndex = dep > 0.5 ? '3' : '1';
         }
       });
     }
-    // supernova del clic: destello, dos ondas de choque y chispas
+    // supernova del clic: destello con estrella de luz, tres ondas de choque que siguen la inclinación del aro y chispas
     if (bm) {
       ctx.globalCompositeOperation = 'lighter';
-      const fl = Math.max(0, 1 - bm.a / 0.35);
-      if (fl > 0) { const g = ctx.createRadialGradient(bm.x, bm.y, 0, bm.x, bm.y, 90); g.addColorStop(0, 'rgba(235,248,255,' + (0.9 * fl).toFixed(3) + ')'); g.addColorStop(0.35, 'rgba(10,155,245,' + (0.5 * fl).toFixed(3) + ')'); g.addColorStop(1, 'rgba(10,155,245,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bm.x, bm.y, 90, 0, 6.283); ctx.fill(); }
-      for (const [dl, w0] of [[0, 3], [0.14, 1.6]]) {
-        const aa = bm.a - dl; if (aa <= 0 || aa > 0.9) continue;
-        const rr = (W < 860 ? 260 : 460) * (1 - Math.pow(1 - aa / 0.9, 3)), al = 1 - aa / 0.9;
-        ctx.strokeStyle = 'rgba(120,205,255,' + (0.85 * al).toFixed(3) + ')'; ctx.lineWidth = w0 * al + 0.4;
-        ctx.beginPath(); ctx.ellipse(bm.x, bm.y, rr, rr * 0.62, -0.38, 0, 6.283); ctx.stroke();
+      const mob = W < 860, fl = bm.a < 0.08 ? bm.a / 0.08 : Math.max(0, 1 - (bm.a - 0.08) / 0.7), FR = mob ? 95 : 150;
+      if (fl > 0) {
+        const g = ctx.createRadialGradient(bm.x, bm.y, 0, bm.x, bm.y, FR);
+        g.addColorStop(0, 'rgba(245,252,255,' + (0.95 * fl).toFixed(3) + ')'); g.addColorStop(0.2, 'rgba(140,215,255,' + (0.6 * fl).toFixed(3) + ')'); g.addColorStop(0.55, 'rgba(10,120,245,' + (0.22 * fl).toFixed(3) + ')'); g.addColorStop(1, 'rgba(10,63,192,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bm.x, bm.y, FR, 0, 6.283); ctx.fill();
+        const SL = (mob ? 170 : 300) * (0.4 + 0.6 * fl);
+        for (const [an, w] of [[0, 2], [Math.PI / 2, 2], [Math.PI / 4, 1], [-Math.PI / 4, 1]]) {
+          const vx = Math.cos(an), vy = Math.sin(an), L2 = an % (Math.PI / 2) ? SL * 0.45 : SL;
+          const gg = ctx.createLinearGradient(bm.x - vx * L2, bm.y - vy * L2, bm.x + vx * L2, bm.y + vy * L2);
+          gg.addColorStop(0, 'rgba(140,210,255,0)'); gg.addColorStop(0.5, 'rgba(240,250,255,' + (0.85 * fl).toFixed(3) + ')'); gg.addColorStop(1, 'rgba(140,210,255,0)');
+          ctx.strokeStyle = gg; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(bm.x - vx * L2, bm.y - vy * L2); ctx.lineTo(bm.x + vx * L2, bm.y + vy * L2); ctx.stroke();
+        }
+      }
+      for (const [dl, w0] of [[0, 3.2], [0.2, 2], [0.4, 1.2]]) {
+        const aa = bm.a - dl, D = 1.4; if (aa <= 0 || aa > D) continue;
+        const pr = aa / D, rr = (mob ? 280 : 520) * (1 - Math.pow(1 - pr, 3)), al = Math.pow(1 - pr, 1.5);
+        ctx.strokeStyle = 'rgba(58,168,219,' + (0.35 * al).toFixed(3) + ')'; ctx.lineWidth = w0 * 4 * al + 0.5;
+        ctx.beginPath(); ctx.ellipse(bm.x, bm.y, rr, rr * 0.42, -0.384, 0, 6.283); ctx.stroke();
+        ctx.strokeStyle = 'rgba(200,236,255,' + (0.8 * al).toFixed(3) + ')'; ctx.lineWidth = w0 * al + 0.4;
+        ctx.beginPath(); ctx.ellipse(bm.x, bm.y, rr, rr * 0.42, -0.384, 0, 6.283); ctx.stroke();
       }
       ctx.globalCompositeOperation = 'source-over';
     }
@@ -2503,7 +2560,7 @@ class Component extends DCLogic {
       const dt3 = Math.min(0.05, (now - (c.bt || now)) / 1000); c.bt = now;
       ctx.globalCompositeOperation = 'lighter';
       c.B = c.B.filter(e => {
-        e.x += e.vx * dt3; e.y += e.vy * dt3; e.vx *= 0.94; e.vy *= 0.94; e.l -= dt3 * 1.3;
+        const dr3 = Math.pow(0.955, dt3 * 60); e.vx *= dr3; e.vy *= dr3; e.x += e.vx * dt3; e.y += e.vy * dt3; e.l -= dt3 * 0.75;
         if (e.l <= 0) return false;
         ctx.fillStyle = 'rgba(' + Math.round(150 + 100 * e.l) + ',225,255,' + (e.l * 0.95).toFixed(3) + ')';
         ctx.beginPath(); ctx.arc(e.x, e.y, e.s * (0.4 + e.l * 0.6), 0, 6.283); ctx.fill();
