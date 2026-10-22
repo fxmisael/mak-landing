@@ -398,12 +398,36 @@ img,video,svg{max-width:100%}
   .mk-scn{grid-template-columns:1fr}
 }
 
+/* botón flotante de MAK AI */
+.mk-ai-fab{position:fixed;right:clamp(16px,2.5vw,28px);bottom:clamp(16px,2.5vw,28px);z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:12px;transition:opacity .35s,transform .35s var(--ease)}
+.mk-ai-fab[data-hide="true"]{opacity:0;transform:translateY(14px);pointer-events:none}
+.mk-ai-btn{position:relative;display:inline-flex;align-items:center;gap:12px;min-height:60px;padding:6px 24px 6px 7px;border-radius:999px;background:var(--grad);color:#fff;font:500 16px Sora,sans-serif;letter-spacing:-0.005em;border:2px solid rgba(255,255,255,0.7);box-shadow:0 14px 36px rgba(0,0,0,0.5),0 0 34px rgba(10,155,245,0.55);transition:transform .3s var(--ease),box-shadow .3s;animation:makFloat 4.2s ease-in-out infinite}
+.mk-ai-btn::before,.mk-ai-btn::after{content:"";position:absolute;inset:-2px;border-radius:inherit;border:2px solid rgba(58,168,219,0.7);opacity:0;pointer-events:none;animation:makRing 2.6s ease-out infinite}
+.mk-ai-btn::after{animation-delay:1.3s}
+.mk-ai-btn:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.mk-ai-btn:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,0.5),0 0 48px rgba(10,155,245,0.75)}}
+.mk-ai-orb{position:relative;flex:none;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center}
+.mk-ai-live{position:absolute;top:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#34D399;border:2px solid #0A3FC0;box-sizing:border-box}
+.mk-ai-label{white-space:nowrap}
+.mk-ai-tip{position:relative;max-width:min(272px,calc(100vw - 32px));padding:14px 40px 14px 16px;border-radius:18px 18px 6px 18px;background:rgba(11,27,53,0.92);border:1px solid rgba(58,168,219,0.45);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 14px 36px rgba(0,0,0,0.45);font-size:15px;line-height:1.5;animation:makMsg .5s var(--ease) both}
+.mk-ai-tip a{display:block;color:rgba(255,255,255,0.92)}
+.mk-ai-tip b{font-weight:600;color:#9FD4F2}
+.mk-ai-x{position:absolute;top:0;right:0;width:44px;height:44px;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.7}
+@keyframes makRing{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.4,1.6);opacity:0}}
+@keyframes makFloat{0%,100%{translate:0 0}50%{translate:0 -4px}}
+
 /* --- celular --- */
 @media (max-width: 767px){
   .mak-h1{font-size:clamp(32px,8.6vw,42px)!important;letter-spacing:-0.025em!important}
   .mak-br{display:none}
   .mak-form-label{font-size:15px!important}
   .mak-fab{right:max(16px, env(safe-area-inset-right))!important;bottom:max(16px, env(safe-area-inset-bottom))!important}
+  .mk-ai-btn{min-height:0;padding:0;gap:0}
+  .mk-ai-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .mk-ai-orb{width:62px;height:62px;background:rgba(255,255,255,0.14)}
+  .mk-ai-orb svg{width:30px;height:30px}
+  .mk-ai-live{top:3px;right:3px;width:14px;height:14px}
+  .mk-ai-tip{max-width:min(248px,calc(100vw - 32px));font-size:14.5px}
   .mk-node b{display:none}
   .mk-node-in{padding:7px 12px 7px 9px;font-size:13px}
 
@@ -876,7 +900,6 @@ img,video,svg{max-width:100%}
             <div class="mk-legend" aria-label="Estado de cada capacidad">
               <span><i class="mk-dot mk-dot-ok"></i>Implementado</span>
               <span><i class="mk-dot mk-dot-int"></i>Requiere integración</span>
-              <span><i class="mk-dot mk-dot-dev"></i>En desarrollo</span>
             </div>
             <div class="mk-caps-wrap" data-open="{{ capsAi }}"><ul class="mk-caps">
               <sc-for list="{{ aiCaps }}" as="c" hint-placeholder-count="10">
@@ -1250,13 +1273,12 @@ img,video,svg{max-width:100%}
   <div style="position:relative; max-width:1240px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:48px;">
     <div data-reveal="0" style="min-width:0; flex:1 1 360px; max-width:520px; display:flex; flex-direction:column; gap:24px;">
       <h2 id="h-contacto" style="margin:0; font-family:Sora, sans-serif; font-weight:300; font-size:clamp(36px,5vw,68px); line-height:1.08; letter-spacing:-0.035em; text-wrap:balance;">Cuéntanos qué necesita tu empresa.</h2>
-      <p style="margin:0; font-size:16px; line-height:1.6; color:rgba(255,255,255,0.7);">Solicita una demostración o una cotización. Te contactamos para agendar el diagnóstico. Si prefieres, escríbenos directo por WhatsApp.</p>
+      <p style="margin:0; font-size:16px; line-height:1.6; color:rgba(255,255,255,0.7);">Solicita una demostración o una cotización. Te contactamos para agendar el diagnóstico.</p>
       <ul class="mk-hide-m" style="list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; font-size:16px; color:rgba(255,255,255,0.8);">
         <li style="display:flex; gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex:none; margin-top:3px; fill:none; stroke:#3AA8DB; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M20 6 9 17l-5-5"></path></svg>Diagnóstico de tu operación antes de cotizar</li>
         <li style="display:flex; gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex:none; margin-top:3px; fill:none; stroke:#3AA8DB; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M20 6 9 17l-5-5"></path></svg>Demostración con escenarios parecidos a tu negocio</li>
         <li style="display:flex; gap:10px;"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex:none; margin-top:3px; fill:none; stroke:#3AA8DB; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M20 6 9 17l-5-5"></path></svg>Propuesta escrita con alcance, etapas e inversión</li>
       </ul>
-      <a href="{{ waUrl }}" target="_blank" rel="noopener noreferrer" style="align-self:flex-start; display:inline-flex; align-items:center; gap:10px; min-height:52px; padding:0 24px; border-radius:999px; background:#fff; color:#05080F; font-size:15px; font-weight:500;" style-hover="background:rgba(255,255,255,0.86); color:#05080F;" style-active="transform:scale(0.97);"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill:none; stroke:#05080F; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>Escribir por WhatsApp</a>
     </div>
     <div data-reveal="150" class="mk-glass" style="min-width:0; width:100%; flex:1 1 380px; max-width:540px; border-radius:28px; padding:clamp(24px,3vw,36px);">
       <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
@@ -1367,10 +1389,22 @@ img,video,svg{max-width:100%}
   </div>
 </footer>
 
-<!-- WhatsApp flotante -->
-<a class="mak-fab" href="{{ waUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp" style="position:fixed; right:clamp(16px,2.5vw,28px); bottom:clamp(16px,2.5vw,28px); z-index:60; width:58px; height:58px; border-radius:50%; background:linear-gradient(135deg, #0A9BF5, #0A3FC0); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px rgba(10,63,192,0.45); transition:box-shadow .3s, transform .3s;" style-hover="transform:translateY(-2px); box-shadow:0 0 0 1px rgba(10,155,245,0.5), 0 12px 40px rgba(10,155,245,0.55);">
-  <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" style="fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
-</a>
+<!-- MAK AI flotante: lleva a la demo (#demo). Se esconde mientras la demo está a la vista -->
+<div class="mak-fab mk-ai-fab" data-hide="{{ fabHide }}">
+  <sc-if value="{{ fabTip }}">
+    <div class="mk-ai-tip" role="status">
+      <a href="#demo" onClick="{{ fabGo }}">Hola, soy <b>MAK AI</b>. Escríbeme o mándame una nota de voz y mira cómo atiendo a un cliente.</a>
+      <button type="button" class="mk-ai-x" aria-label="Cerrar sugerencia" onClick="{{ fabTipClose }}"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round;"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg></button>
+    </div>
+  </sc-if>
+  <a href="#demo" class="mk-ai-btn" onClick="{{ fabGo }}" aria-label="Probar MAK AI: conversa con el asistente de demostración">
+    <span class="mk-ai-orb" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 24 24" style="fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;"><path d="M20 12.5V15a2 2 0 0 1-2 2H9l-4 3.5V7a2 2 0 0 1 2-2h5"></path><path d="M17.5 2.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" style="fill:#fff; stroke:none;"></path></svg>
+      <i class="mk-ai-live"></i>
+    </span>
+    <span class="mk-ai-label">Habla con MAK AI</span>
+  </a>
+</div>
 
 </div>
 </x-dc>
@@ -1414,7 +1448,7 @@ const AI_CAPS = [
   ['Automatizaciones de seguimiento y registro de interacciones', 'ok'],
   ['Agendamiento de citas con Cal.com o HighLevel', 'int'],
   ['Sincronización con HubSpot, HighLevel o n8n', 'int'],
-  ['Calendario de reservas propio', 'dev']
+  ['Calendario de reservas propio', 'ok']
 ];
 const ST_LABEL = { ok: 'Implementado', int: 'Requiere integración', dev: 'En desarrollo' };
 
@@ -1447,10 +1481,10 @@ const MISION = 'Desarrollar tecnología innovadora, accesible y funcional que pe
 const VISION = 'Convertir a MAK en una empresa tecnológica de referencia, reconocida por desarrollar productos inteligentes, impulsar la transformación empresarial y crear soluciones capaces de evolucionar con las necesidades del mercado.';
 
 const PROJECTS = [
-  { name: 'Asian Palace', kind: 'Restaurante · Gazcue, Santo Domingo', status: 'Proyecto real · publicado', url: 'https://asian-palace-rd.netlify.app', desk: 'assets/proyectos/asian-desktop.jpg', mob: 'assets/proyectos/asian-movil.jpg', deskVid: 'assets/proyectos/asian-desktop.mp4', mobVid: 'assets/proyectos/asian-movil.mp4',
+  { name: 'Asian Palace', kind: 'Restaurante · Gazcue, Santo Domingo', status: 'Proyecto real · publicado', url: '', desk: 'assets/proyectos/asian-desktop.jpg', mob: 'assets/proyectos/asian-movil.jpg', deskVid: 'assets/proyectos/asian-desktop.mp4', mobVid: 'assets/proyectos/asian-movil.mp4',
     desc: 'Sitio informativo con video de portada, menú, ubicación y pedidos que salen por WhatsApp, teléfono o apps de delivery.',
     feats: ['Video de portada', 'Menú y ubicación', 'Pedidos por WhatsApp', 'Adaptado a celular', 'Páginas legales'] },
-  { name: 'Hermanos Britos', kind: 'Servicio técnico de montacargas · R.D.', status: 'Proyecto real · por publicar', url: '', desk: 'assets/proyectos/hb-desktop.jpg', mob: 'assets/proyectos/hb-movil.jpg', deskVid: 'assets/proyectos/hb-desktop.mp4', mobVid: 'assets/proyectos/hb-movil.mp4',
+  { name: 'Hermanos Britos', kind: 'Servicio técnico de montacargas · R.D.', status: 'Proyecto real · publicado', url: 'https://hermanosbritos.com', desk: 'assets/proyectos/hb-desktop.jpg', mob: 'assets/proyectos/hb-movil.jpg', deskVid: 'assets/proyectos/hb-desktop.mp4', mobVid: 'assets/proyectos/hb-movil.mp4',
     desc: 'Web institucional de una empresa industrial: servicios, trabajos, contacto y solicitud de inspección, con analítica solo después del consentimiento.',
     feats: ['Video de portada', 'Solicitud de servicio', 'Analítica con consentimiento', 'Adaptada a celular'] }
 ];
@@ -2056,7 +2090,7 @@ class Component extends DCLogic {
     labMode: 'free', labTab: 'need', labPanelOpen: false,
     detail: '', caps: {}, flowStep: 0, flowPlaying: false, flowN: 0, diag: '', diagN: 0, proj: 0, device: 'desk',
     product: '', form: emptyForm(), error: '', sending: false, sent: '', waLeadUrl: '',
-    voiceOK: false, recording: false, recT: 0, voiceErr: ''
+    voiceOK: false, recording: false, recT: 0, voiceErr: '', demoSeen: false, fabTip: false
   };
   videoRef = React.createRef(); videoRef2 = React.createRef(); heroRef = React.createRef(); timelineRef = React.createRef(); lineRef = React.createRef();
   coreRef = React.createRef(); coreWrapRef = React.createRef(); flowRailRef = React.createRef(); diagRef = React.createRef(); chatLogRef = React.createRef(); nombreRef = React.createRef(); projStageRef = React.createRef();
@@ -2073,6 +2107,16 @@ class Component extends DCLogic {
     window.addEventListener('keydown', this.onKey);
     this.setState({ reduced, mobile: document.documentElement.clientWidth < 860 }, () => { this.setupVideo(); this.handleScroll(); this.setupCore(); });
     this.setupReveal(reduced);
+    // Botón flotante de MAK AI: se esconde mientras la demo está a la vista y, una vez por sesión, muestra una invitación.
+    const demoEl = document.getElementById('demo');
+    if (demoEl && 'IntersectionObserver' in window) {
+      this.demoIO = new IntersectionObserver(es => this.setState({ demoSeen: es[0].isIntersecting }), { rootMargin: '-25% 0px -25% 0px' });
+      this.demoIO.observe(demoEl);
+    }
+    let shown = false; try { shown = sessionStorage.getItem('mak-ai-tip') === '1'; } catch (_) {}
+    if (!shown) {
+      this.tipT = setTimeout(() => { if (this.dead || this.state.demoSeen) return; this.setState({ fabTip: true }); try { sessionStorage.setItem('mak-ai-tip', '1'); } catch (_) {} this.tipT2 = setTimeout(() => this.setState({ fabTip: false }), 14000); }, 6000);
+    }
     const AC = window.AudioContext || window.webkitAudioContext;
     this.setState({ voiceOK: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder && AC && window.OfflineAudioContext) });
     this.setupProjVideo();
@@ -2086,7 +2130,7 @@ class Component extends DCLogic {
     if (this.onVis) document.removeEventListener('visibilitychange', this.onVis);
     cancelAnimationFrame(this.raf); cancelAnimationFrame(this.xraf); this.dead = true;
     if (this.core) cancelAnimationFrame(this.core.raf);
-    clearTimeout(this.ft); clearTimeout(this.dt); clearTimeout(this.pt); clearInterval(this.recTick);
+    clearTimeout(this.ft); clearTimeout(this.dt); clearTimeout(this.pt); clearInterval(this.recTick); clearTimeout(this.tipT); clearTimeout(this.tipT2); if (this.demoIO) this.demoIO.disconnect();
     if (this.rec) this.rec.stream.getTracks().forEach(t => t.stop());
     if (this.player) this.player.pause();
     this.io && this.io.disconnect(); this.pio && this.pio.disconnect(); this.cio && this.cio.disconnect();
@@ -2544,6 +2588,8 @@ class Component extends DCLogic {
       chatInput: s.chatInput,
       onChatInput: e => this.setState({ chatInput: e.target.value, voiceErr: '' }),
       sendChat: e => { e.preventDefault(); this.sendMsg(s.chatInput); },
+      fabHide: s.demoSeen || s.menuOpen, fabTip: s.fabTip && !s.demoSeen && !s.menuOpen,
+      fabGo: () => this.setState({ fabTip: false }), fabTipClose: () => this.setState({ fabTip: false }),
       cantSend: chat.busy || !s.chatInput.trim(),
       showMic: canVoice && !s.chatInput.trim(), showSend: !canVoice || !!s.chatInput.trim(),
       chatPlaceholder: canVoice ? 'Escribe o graba un audio…' : 'Escribe como si fueras un cliente…',

@@ -77,7 +77,7 @@ FAQ → `#diagnostico` → `#contacto`. **No hay sección de Planes** (se reempl
 - Todo el contenido comercial vive en constantes al inicio del script (`SOLUTIONS`, `INDUSTRIES`,
   `PARTNERS`, `PHILOSOPHY`, `AI_CAPS`, `DIAG`, `FLOW`, `PROJECTS`, `FAQS`…). Sumar una solución = un objeto
   nuevo en `SOLUTIONS` (+ su ícono en el marcado). `AI_CAPS` refleja lo verificado en `agente-mak` rama `main`: no subir
-  un estado ("En desarrollo" → "Implementado") sin verificarlo en código desplegado.
+  un estado ("En desarrollo" → "Implementado") sin verificarlo en código desplegado. «Calendario de reservas propio» pasó a Implementado el 2026-10-21 (verificado: PR #1 «calendario nativo y motor de reservas» en `origin/main`). Hoy no hay capacidades «En desarrollo», por eso la leyenda de ese estado se quitó; si se agrega una con estado `dev`, devolver `<span><i class="mk-dot mk-dot-dev"></i>En desarrollo</span>` a la leyenda.
 - **Demo de IA = IA real + respaldo.** Decisión de Misael (2026-10-21): OpenRouter con `google/gemini-3.5-flash-lite`,
   ~$5/mes. Ver «IA real de la demo». `DemoEngine` (entre `/* ENGINE START */` y `/* ENGINE END */`) es el motor de
   reglas de respaldo: slots por escenario, sin red; nunca inventa precios, horarios ni confirma reservas.
@@ -136,9 +136,10 @@ con clases `mak-*` y `g-*` puestas sobre los elementos.
 |---|---|
 | `mak-h1`, `mak-br` | Titular del hero; los `<br>` se ocultan (llevan espacio antes, si no se pegan las palabras) |
 | `mak-hero`, `mak-vspacer`, `mak-hero-video`, `mak-scrim` | Hero y encuadre del video |
-| `mak-fab`, `mak-form-label` | Botón de WhatsApp (safe-area) y etiquetas del formulario |
+| `mak-form-label` | Etiquetas del formulario |
 | `mk-sol`, `mk-card`, `mk-ptn` | Catálogo de soluciones, tarjetas de capacidades/industrias (riel en móvil) y socios (3 en fila siempre) |
 | `menu-link` | Escala reducida del menú móvil |
+| `mk-ai-fab` (+ `mak-fab`) | Botón flotante «Habla con MAK AI» → `#demo` (reemplazó al de WhatsApp, a pedido de Misael 2026-10-21). Se esconde con la demo a la vista (`IntersectionObserver`) o con el menú abierto; globo de invitación a los 6 s, una vez por sesión |
 
 Bloques adicionales: `@media (orientation: landscape) and (max-height: 560px)` (celular
 horizontal: oculta el separador del video, refuerza el scrim) y `768–1023px` (tablet).
@@ -241,8 +242,8 @@ master 1920×1080 y un corte 9:16 de 1080×1920 para celular. `og:image` deberí
 
 ## Proyectos en movimiento
 
-`assets/proyectos/{asian,hb}-{desktop,movil}.mp4` son **grabaciones de pantalla** de los sitios (Asian Palace publicado;
-Hermanos Britos desde su build local, aún sin publicar). Se reproducen solo mientras el escenario está a la vista
+`assets/proyectos/{asian,hb}-{desktop,movil}.mp4` son **grabaciones de pantalla** de los sitios (Asian Palace publicado (su enlace «Ver sitio en vivo» se quitó a pedido de Misael, 2026-10-21);
+Hermanos Britos desde su build local; hoy ya está publicado en hermanosbritos.com). Se reproducen solo mientras el escenario está a la vista
 (`setupProjVideo`, `IntersectionObserver`); con `prefers-reduced-motion` queda el póster. El `poster` se aplica por JS
 desde `data-poster` (un `poster="{{ }}"` lo pide el navegador antes de que el runtime interpole → 404).
 Para regenerarlos: Playwright en Chrome con `Page.startScreencast` (CDP) y `ffmpeg-static` (en carpeta temporal,
