@@ -342,6 +342,14 @@ img,video,svg{max-width:100%}
 .mk-lab-ic svg{fill:none;stroke:#6CC0F5;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .mk-lab-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
 .mk-lab-modes button[aria-selected="true"]{background:#fff;color:#05080F}
+/* Un solo modo: el botón se ve igual que «Habla con MAK AI» (degradado, borde claro, orbe con punto verde y anillos). */
+.mk-lab-modes{padding:0;border:0;background:none;overflow:visible}
+.mk-lab-modes button,.mk-lab-modes button[aria-selected="true"]{position:relative;display:inline-flex;align-items:center;gap:12px;min-height:60px;padding:6px 24px 6px 7px;border-radius:999px;background:var(--grad);color:#fff;font:500 16px Sora,sans-serif;letter-spacing:-0.005em;border:2px solid rgba(255,255,255,0.7);box-shadow:0 14px 36px rgba(0,0,0,0.5),0 0 34px rgba(10,155,245,0.55);transition:transform .3s var(--ease),box-shadow .3s}
+.mk-lab-modes button::before,.mk-lab-modes button::after{content:"";position:absolute;inset:-2px;border-radius:inherit;border:2px solid rgba(58,168,219,0.7);opacity:0;pointer-events:none;animation:makRing 2.6s ease-out infinite}
+.mk-lab-modes button::after{animation-delay:1.3s}
+.mk-lab-modes button:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.mk-lab-modes button:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(0,0,0,0.5),0 0 48px rgba(10,155,245,0.75)}}
+@media (prefers-reduced-motion: reduce){.mk-lab-modes button::before,.mk-lab-modes button::after{display:none}}
 .mk-lab-main{align-items:stretch}
 .mk-lab-main[data-mode="system"]{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
 .mk-lab-panel{gap:14px}
@@ -385,7 +393,10 @@ img,video,svg{max-width:100%}
   .mk-lab-ind small{font-size:12.5px}
   .mk-lab-ic svg{width:22px;height:22px}
   .mk-lab-modes{display:flex;justify-content:center;width:100%}
-  .mk-lab-modes button{padding:0 28px;font-size:14.5px}
+  .mk-lab-modes button{font-size:15px}
+  .mk-lab-modes .mk-ai-orb{width:48px;height:48px}
+  .mk-lab-modes .mk-ai-orb svg{width:26px;height:26px}
+  .mk-lab-modes .mk-ai-live{top:1px;right:1px;width:12px;height:12px}
   .mk-lab-bar .mk-tag{font-size:12px}
   .mk-lab-tabs button{font-size:13px;padding:0 2px}
   .mk-lab-pane{min-height:0}
@@ -1001,7 +1012,7 @@ img,video,svg{max-width:100%}
 
     <div class="mk-lab-bar">
       <div class="mk-seg mk-lab-modes" role="tablist" aria-label="Modo de la experiencia">
-        <sc-for list="{{ labModes }}" as="md" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{ md.on }}" aria-pressed="{{ md.on }}" onClick="{{ md.pick }}"><span class="mk-long">{{ md.label }}</span><span class="mk-short">{{ md.short }}</span></button></sc-for>
+        <sc-for list="{{ labModes }}" as="md" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{ md.on }}" aria-pressed="{{ md.on }}" onClick="{{ md.pick }}"><span class="mk-ai-orb" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" style="fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;"><path d="M20 12.5V15a2 2 0 0 1-2 2H9l-4 3.5V7a2 2 0 0 1 2-2h5"></path><path d="M17.5 2.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" style="fill:#fff; stroke:none;"></path></svg><i class="mk-ai-live"></i></span><span class="mk-long">{{ md.label }}</span><span class="mk-short">{{ md.short }}</span></button></sc-for>
       </div>
       <span class="mk-tag mk-tag-demo"><i></i><span>{{ labModeNote }}</span></span>
     </div>
