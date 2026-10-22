@@ -1,0 +1,6 @@
+.DS_Store
+.thumbnail
+.vercel/
+.env
+.env.*
+node_modules/
