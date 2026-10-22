@@ -4,7 +4,7 @@ Web pública de **MAK** (Misael · Andrew · Kevin), compañía de tecnología e
 Posicionamiento: «Tecnología que trabaja por tu negocio» · lema «Innovación que impulsa posibilidades».
 Soluciones actuales: MAK Business, MAK AI y MAK Web (catálogo que crece: ver `SOLUTIONS`).
 
-**Producción:** https://maksistemas.com (también mak-landing.vercel.app; www redirige al apex · proyecto Vercel `mak-landing`, cuenta `fxmisael`)
+**Producción:** https://maksistemas.com (mak-landing.vercel.app y www redirigen al apex con 308 — Misael no quiere que el dominio vercel.app se vea; no volver a publicarlo · proyecto Vercel `mak-landing`, cuenta `fxmisael`)
 
 ---
 

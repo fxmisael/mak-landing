@@ -51,6 +51,17 @@
       "has": [
         {
           "type": "host",
+          "value": "mak-landing.vercel.app"
+        }
+      ],
+      "destination": "https://maksistemas.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
           "value": "www.maksistemas.com"
         }
       ],

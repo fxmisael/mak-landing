@@ -5,7 +5,7 @@
 // Nunca se registra el contenido de los mensajes.
 
 const MODEL = process.env.OPENROUTER_MODEL || 'google/gemini-3.5-flash-lite';
-const ORIGINS = /^https:\/\/(maksistemas\.com|www\.maksistemas\.com|mak-landing(-[a-z0-9-]+)?\.vercel\.app)$|^http:\/\/localhost(:\d+)?$/;
+const ORIGINS = /^https:\/\/(maksistemas\.com|www\.maksistemas\.com)$|^http:\/\/localhost(:\d+)?$/;
 const MAX_MSGS = 24, MAX_CHARS = 300, MAX_TURNS = 14;
 // Nota de voz: WAV 16 kHz mono en base64, solo en el último mensaje. 1,5 MB ≈ 35 s (la página corta a los 30 s).
 const MAX_AUDIO = 1500000, MAX_BODY = 2000000, B64 = /^[A-Za-z0-9+/]+={0,2}$/;
