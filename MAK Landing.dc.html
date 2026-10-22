@@ -2145,6 +2145,7 @@ class Component extends DCLogic {
     this.setupProjVideo();
   }
   componentWillUnmount() {
+    clearTimeout(this.boomT);
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('keydown', this.onKey);
@@ -2275,11 +2276,25 @@ class Component extends DCLogic {
     // los botones orbitan: se frenan con suavidad al pasar el mouse o con el foco, para poder hacer clic
     const wrap = this.coreWrapRef.current;
     if (wrap) {
-      const hold = v => e => { if (e.target.closest && e.target.closest('.mk-node')) this.core.hold = v; };
+      const idx = e => { const nd = e.target.closest && e.target.closest('.mk-node'); return nd ? this.nodeRefs.findIndex(r => r.current === nd) : -1; };
+      const hold = v => e => { const i = idx(e); if (i < 0) return; this.core.hold = v; this.core.hi = v ? i : -1; this.kickCore(); };
       wrap.addEventListener('pointerover', hold(true)); wrap.addEventListener('pointerout', hold(false));
       wrap.addEventListener('focusin', hold(true)); wrap.addEventListener('focusout', hold(false));
       wrap.addEventListener('touchstart', hold(true), { passive: true });
-      wrap.addEventListener('touchend', () => setTimeout(() => { if (this.core) this.core.hold = false; }, 900), { passive: true });
+      wrap.addEventListener('touchend', () => setTimeout(() => { if (this.core) { this.core.hold = false; this.core.hi = -1; } }, 900), { passive: true });
+      // clic en un botón: explosión de luz (supernova) y, un instante después, baja a su sección
+      wrap.addEventListener('click', e => {
+        const a = e.target.closest && e.target.closest('.mk-node'); if (!a) return;
+        if (a.dataset.go) { delete a.dataset.go; return; }            // segundo clic (programático): sigue el ancla normal
+        const c = this.core, i = this.nodeRefs.findIndex(r => r.current === a);
+        if (this.state.reduced || !c || !c.npos || !c.npos[i]) return;
+        e.preventDefault(); e.stopPropagation();
+        const [bx, by] = c.npos[i], n = c.W < 860 ? 26 : 44;
+        c.boom = { x: bx, y: by, t0: performance.now() };
+        c.B = Array.from({ length: n }, () => { const an = Math.random() * 6.283, sp = 160 + Math.random() * 420; return { x: bx, y: by, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp, l: 1, s: 0.8 + Math.random() * 1.6 }; });
+        this.kickCore();
+        clearTimeout(this.boomT); this.boomT = setTimeout(() => { a.dataset.go = '1'; a.click(); }, 430);
+      });
     }
     if (!this.state.reduced && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       this.onMove = e => { this.core.tx = e.clientX / window.innerWidth * 2 - 1; this.core.ty = e.clientY / window.innerHeight * 2 - 1; };
@@ -2301,6 +2316,32 @@ class Component extends DCLogic {
     const halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.9);
     halo.addColorStop(0, 'rgba(10,155,245,' + (0.09 * fade).toFixed(3) + ')'); halo.addColorStop(1, 'rgba(10,155,245,0)');
     ctx.fillStyle = halo; ctx.fillRect(0, 0, W, H);
+    // salto al hiperespacio: al deslizar rápido las estrellas se estiran en líneas (hacia afuera al bajar, hacia adentro al subir)
+    const sy = window.scrollY || 0, dv = sy - (c.wsy == null ? sy : c.wsy); c.wsy = sy;
+    c.wv = (c.wv || 0) + (dv - (c.wv || 0)) * 0.2;
+    const warp = still ? 0 : Math.min(1, Math.max(0, (Math.abs(c.wv) - 2) / (W < 860 ? 24 : 30))), wdir = c.wv >= 0 ? 1 : -1;
+    if (!c.WS) c.WS = Array.from({ length: W < 860 ? 45 : c.low ? 60 : 100 }, () => ({ x: Math.random() * W, y: Math.random() * H, z: 0.3 + Math.random() * 0.7, h: Math.random() }));
+    {
+      const Rmax = Math.hypot(W, H) * 0.6;
+      ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+      for (const q of c.WS) {
+        let dx = q.x - cx, dy = q.y - cy, d = Math.hypot(dx, dy) || 1;
+        if (warp > 0.01) {
+          const st = warp * (6 + d * 0.05) * q.z * wdir; q.x += dx / d * st; q.y += dy / d * st;
+          dx = q.x - cx; dy = q.y - cy; d = Math.hypot(dx, dy) || 1;
+          if (wdir > 0 && (q.x < -40 || q.x > W + 40 || q.y < -40 || q.y > H + 40)) { const an = Math.random() * 6.283, rr = 20 + Math.random() * Rmax * 0.25; q.x = cx + Math.cos(an) * rr; q.y = cy + Math.sin(an) * rr * 0.6; continue; }
+          if (wdir < 0 && d < 24) { const an = Math.random() * 6.283; q.x = cx + Math.cos(an) * Rmax; q.y = cy + Math.sin(an) * Rmax * 0.7; continue; }
+          const k = warp * (0.2 + 0.45 * q.z) * Math.min(1, d / 120), tx = q.x - dx * k * wdir, ty = q.y - dy * k * wdir;
+          const g = ctx.createLinearGradient(q.x, q.y, tx, ty);
+          g.addColorStop(0, 'rgba(225,242,255,' + (0.9 * q.z * fade).toFixed(3) + ')'); g.addColorStop(1, 'rgba(60,150,255,0)');
+          ctx.strokeStyle = g; ctx.lineWidth = 0.8 + q.z * 1.8; ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(tx, ty); ctx.stroke();
+        } else {
+          const al = 0.35 * q.z * fade * (0.55 + 0.45 * Math.sin(t * 1.7 + q.h * 30));
+          ctx.fillStyle = 'rgba(210,235,255,' + al.toFixed(3) + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, 0.5 + q.z * 0.8, 0, 6.283); ctx.fill();
+        }
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
     // galaxia: brazos en espiral de polvo estelar girando alrededor del núcleo
     if (!c.G) c.G = Array.from({ length: W < 860 ? 70 : c.low ? 110 : 190 }, (_, i) => ({ arm: i % 3, d: Math.pow(Math.random(), 0.7), j: (Math.random() - 0.5) * 0.5, s: 0.5 + Math.random() * 1.3, h: Math.random() }));
     {
@@ -2311,7 +2352,8 @@ class Component extends DCLogic {
         const x = cx + Math.cos(th) * r + c.mx * 8 * q.d, y = cy + Math.sin(th) * r * 0.42 + c.my * 6 * q.d;
         const al = (1 - q.d * 0.8) * 0.8 * fade * (0.6 + 0.4 * Math.sin(t * 2 + q.h * 20));
         ctx.fillStyle = q.h < 0.18 ? 'rgba(170,140,255,' + al.toFixed(3) + ')' : 'rgba(120,195,255,' + al.toFixed(3) + ')';
-        ctx.beginPath(); ctx.arc(x, y, q.s, 0, 6.283); ctx.fill();
+        if (warp > 0.05) { const k = warp * 0.22 * wdir; ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = q.s * 1.2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - (x - cx) * k, y - (y - cy) * k); ctx.stroke(); }
+        else { ctx.beginPath(); ctx.arc(x, y, q.s, 0, 6.283); ctx.fill(); }
       }
       ctx.globalCompositeOperation = 'source-over';
     }
@@ -2319,6 +2361,12 @@ class Component extends DCLogic {
     const u = c.u * shrink, RINGS = [[368, 136, -22], [354, 130, 25]];
     c.sv += (((window.scrollY || 0) * 0.0042) - c.sv) * 0.12;
     const spin = still ? 0 : t + c.sv * 4.2, P = [];
+    let bm = null;
+    if (c.boom) {
+      const ba = (now - c.boom.t0) / 1000;
+      if (ba > 1.8) c.boom = null;
+      else bm = { x: c.boom.x, y: c.boom.y, R: W < 860 ? 160 : 260, f: (W < 860 ? 45 : 80) * (ba < 0.12 ? ba / 0.12 : Math.exp(-(ba - 0.12) * 2.6)), a: ba };
+    }
     for (const p of c.pts) {
       const [A, B, th] = RINGS[p.ring], ang = p.a + p.w * spin * 3;
       const ca = Math.cos(ang), sa = Math.sin(ang), rr = 1 + p.off / 130;
@@ -2326,8 +2374,10 @@ class Component extends DCLogic {
       const dep = (sa + 1) / 2;                       // 0 = fondo, 1 = frente
       const z = 0.4 + dep * 0.6;
       const tx = ang - p.w * 0.12, ex2 = A * Math.cos(tx) * rr, ey2 = B * Math.sin(tx) * rr + p.v * 6 * Math.cos(tx);
-      P.push({ x: cx + (ex * ct - ey * st) * u + c.mx * 14 * z, y: cy + (ex * st + ey * ct) * u + c.my * 9 * z,
-               x2: cx + (ex2 * ct - ey2 * st) * u + c.mx * 14 * z, y2: cy + (ex2 * st + ey2 * ct) * u + c.my * 9 * z, z, p });
+      let px = cx + (ex * ct - ey * st) * u + c.mx * 14 * z, py = cy + (ex * st + ey * ct) * u + c.my * 9 * z, bx = 0, by = 0;
+      if (bm) { const ddx = px - bm.x, ddy = py - bm.y, dd = Math.hypot(ddx, ddy) || 1, pu = bm.f * Math.max(0, 1 - dd / bm.R); bx = ddx / dd * pu; by = ddy / dd * pu; }
+      P.push({ x: px + bx, y: py + by,
+               x2: cx + (ex2 * ct - ey2 * st) * u + c.mx * 14 * z + bx, y2: cy + (ex2 * st + ey2 * ct) * u + c.my * 9 * z + by, z, p });
     }
     P.sort((m, n) => m.z - n.z);
     const L = W < 860 ? 46 : 70;
@@ -2421,6 +2471,7 @@ class Component extends DCLogic {
           const al = Math.sin(u2 * Math.PI) * 0.85 * fade;
           ctx.fillStyle = 'rgba(220,240,255,' + al.toFixed(3) + ')'; ctx.beginPath(); ctx.arc(px, py, 1.7, 0, 6.283); ctx.fill();
         }
+        c.npos = c.npos || []; c.npos[i] = [x0, y0, dep];
         const el = this.nodeRefs[i].current;
         if (el) {
           const sc = 0.84 + dep * 0.24;
@@ -2434,6 +2485,74 @@ class Component extends DCLogic {
           el.style.zIndex = dep > 0.5 ? '3' : '1';
         }
       });
+    }
+    // supernova del clic: destello, dos ondas de choque y chispas
+    if (bm) {
+      ctx.globalCompositeOperation = 'lighter';
+      const fl = Math.max(0, 1 - bm.a / 0.35);
+      if (fl > 0) { const g = ctx.createRadialGradient(bm.x, bm.y, 0, bm.x, bm.y, 90); g.addColorStop(0, 'rgba(235,248,255,' + (0.9 * fl).toFixed(3) + ')'); g.addColorStop(0.35, 'rgba(10,155,245,' + (0.5 * fl).toFixed(3) + ')'); g.addColorStop(1, 'rgba(10,155,245,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bm.x, bm.y, 90, 0, 6.283); ctx.fill(); }
+      for (const [dl, w0] of [[0, 3], [0.14, 1.6]]) {
+        const aa = bm.a - dl; if (aa <= 0 || aa > 0.9) continue;
+        const rr = (W < 860 ? 260 : 460) * (1 - Math.pow(1 - aa / 0.9, 3)), al = 1 - aa / 0.9;
+        ctx.strokeStyle = 'rgba(120,205,255,' + (0.85 * al).toFixed(3) + ')'; ctx.lineWidth = w0 * al + 0.4;
+        ctx.beginPath(); ctx.ellipse(bm.x, bm.y, rr, rr * 0.62, -0.38, 0, 6.283); ctx.stroke();
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    if (c.B && c.B.length) {
+      const dt3 = Math.min(0.05, (now - (c.bt || now)) / 1000); c.bt = now;
+      ctx.globalCompositeOperation = 'lighter';
+      c.B = c.B.filter(e => {
+        e.x += e.vx * dt3; e.y += e.vy * dt3; e.vx *= 0.94; e.vy *= 0.94; e.l -= dt3 * 1.3;
+        if (e.l <= 0) return false;
+        ctx.fillStyle = 'rgba(' + Math.round(150 + 100 * e.l) + ',225,255,' + (e.l * 0.95).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(e.x, e.y, e.s * (0.4 + e.l * 0.6), 0, 6.283); ctx.fill();
+        return true;
+      });
+      ctx.globalCompositeOperation = 'source-over';
+    } else c.bt = 0;
+    // constelaciones: al pasar por un botón, las estrellas se juntan y dibujan su ícono
+    if (!c.IC) {
+      const gear = [], inner = [];
+      for (let k = 0; k < 16; k++) { const an = k * Math.PI / 8 + Math.PI / 16, r = (Math.floor(k / 2) % 2 === 0) ? 1 : 0.72; gear.push([Math.cos(an) * r, Math.sin(an) * r]); }
+      for (let k = 0; k < 6; k++) { const an = k * Math.PI / 3; inner.push([Math.cos(an) * 0.32, Math.sin(an) * 0.32]); }
+      const DEF = [
+        { lines: [[gear, 1], [inner, 1]], dots: [] },
+        { lines: [[[[-1, -0.75], [1, -0.75], [1, 0.35], [-0.15, 0.35], [-0.6, 0.85], [-0.55, 0.35], [-1, 0.35]], 1]], dots: [[-0.45, -0.2], [0, -0.2], [0.45, -0.2]] },
+        { lines: [[[[-1, -0.75], [1, -0.75], [1, 0.75], [-1, 0.75]], 1], [[[-1, -0.38], [1, -0.38]], 0], [[[-0.3, 0], [-0.58, 0.2], [-0.3, 0.42]], 0], [[[0.3, 0], [0.58, 0.2], [0.3, 0.42]], 0]], dots: [[-0.8, -0.57], [-0.6, -0.57], [-0.4, -0.57]] }
+      ];
+      c.IC = DEF.map(d => {
+        const pts = [], segs = [];
+        for (const [ln, cl] of d.lines) { const b0 = pts.length; ln.forEach(q => pts.push(q)); for (let k = 0; k < ln.length - 1; k++) segs.push([b0 + k, b0 + k + 1]); if (cl) segs.push([b0 + ln.length - 1, b0]); }
+        d.dots.forEach(q => pts.push(q));
+        return { pts, segs, o: pts.map(() => ({ ox: (Math.random() - 0.5) * 2, oy: (Math.random() - 0.5) * 2, d: Math.random() * 0.45 })) };
+      });
+      c.hv = [0, 0, 0];
+    }
+    if (c.npos) for (let i = 0; i < 3; i++) {
+      const tg = c.hi === i ? 1 : 0;
+      c.hv[i] = still ? tg : c.hv[i] + (tg - c.hv[i]) * (tg ? 0.06 : 0.12);
+      const h = c.hv[i]; if (h < 0.01 || !c.npos[i]) continue;
+      const [nx0, ny0] = c.npos[i], S = W < 860 ? 22 : 34;
+      let ix = Math.min(W - S - 12, Math.max(S + 12, nx0)), iy = ny0 - S - 42;
+      if (iy - S < 16) iy = ny0 + S + 42;
+      const ic = c.IC[i], ease = x => 1 - Math.pow(1 - x, 3);
+      const pp = ic.o.map(o => ease(Math.min(1, Math.max(0, (h * 1.45 - o.d)))));
+      const pos = ic.pts.map(([qx, qy], k) => { const o = ic.o[k], v = pp[k]; return [ix + o.ox * 110 + (qx * S - o.ox * 110) * v, iy + o.oy * 80 + (qy * S - o.oy * 80) * v]; });
+      ctx.globalCompositeOperation = 'lighter';
+      const halo2 = ctx.createRadialGradient(ix, iy, 0, ix, iy, S * 2); halo2.addColorStop(0, 'rgba(10,155,245,' + (0.16 * h).toFixed(3) + ')'); halo2.addColorStop(1, 'rgba(10,155,245,0)');
+      ctx.fillStyle = halo2; ctx.beginPath(); ctx.arc(ix, iy, S * 2, 0, 6.283); ctx.fill();
+      ctx.lineWidth = 1; ctx.lineCap = 'round';
+      for (const [a1, b1] of ic.segs) {
+        const al = Math.min(pp[a1], pp[b1]) * 0.75 * h; if (al < 0.02) continue;
+        ctx.strokeStyle = 'rgba(130,205,255,' + al.toFixed(3) + ')'; ctx.beginPath(); ctx.moveTo(pos[a1][0], pos[a1][1]); ctx.lineTo(pos[b1][0], pos[b1][1]); ctx.stroke();
+      }
+      for (let k = 0; k < pos.length; k++) {
+        const al = h * (0.4 + 0.6 * pp[k]), tw = 0.75 + 0.25 * Math.sin(t * 6 + k);
+        ctx.fillStyle = 'rgba(10,155,245,' + (al * 0.3).toFixed(3) + ')'; ctx.beginPath(); ctx.arc(pos[k][0], pos[k][1], 4.5, 0, 6.283); ctx.fill();
+        ctx.fillStyle = 'rgba(235,248,255,' + (al * tw).toFixed(3) + ')'; ctx.beginPath(); ctx.arc(pos[k][0], pos[k][1], 1.5, 0, 6.283); ctx.fill();
+      }
+      ctx.globalCompositeOperation = 'source-over';
     }
     if (!still && c.visible && !document.hidden) c.raf = requestAnimationFrame(this.drawCore);
   };
