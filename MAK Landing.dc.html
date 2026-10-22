@@ -447,6 +447,10 @@ img,video,svg{max-width:100%}
 @keyframes makRing{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.4,1.6);opacity:0}}
 @keyframes makFloat{0%,100%{translate:0 0}50%{translate:0 -4px}}
 
+/* Los videos son decorativos: nunca deben mostrar el play nativo de iOS (modo de bajo consumo, ahorro de datos). */
+.mak-hero-video{pointer-events:none}
+video::-webkit-media-controls,video::-webkit-media-controls-panel,video::-webkit-media-controls-play-button,video::-webkit-media-controls-start-playback-button,video::-webkit-media-controls-overlay-play-button{display:none!important;-webkit-appearance:none;opacity:0}
+
 /* --- celular --- */
 @media (max-width: 767px){
   .mak-h1{font-size:clamp(32px,8.6vw,42px)!important;letter-spacing:-0.025em!important}
@@ -654,8 +658,8 @@ img,video,svg{max-width:100%}
 <div style="position:relative;">
   <div aria-hidden="true" style="position:sticky; top:0; height:100svh; overflow:hidden; z-index:0; background:#060D1C;">
     <sc-if value="{{ useVideo }}" hint-placeholder-val="{{ true }}">
-      <video class="mak-hero-video" ref="{{ videoRef }}" src="assets/hero-opt.mp4" poster="assets/image-1-opt.webp" preload="auto" autoplay="" muted="" loop="" playsinline="" disablepictureinpicture="" style="position:absolute; z-index:1; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
-      <video class="mak-hero-video" ref="{{ videoRef2 }}" src="assets/hero-opt.mp4" poster="assets/image-1-opt.webp" preload="metadata" muted="" loop="" playsinline="" disablepictureinpicture="" style="position:absolute; z-index:0; opacity:0; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
+      <video class="mak-hero-video" ref="{{ videoRef }}" src="assets/hero-opt.mp4" poster="assets/image-1-opt.webp" preload="auto" autoplay="" muted="" loop="" playsinline="" disablepictureinpicture="" disableremoteplayback="" controlslist="nodownload noremoteplayback" tabindex="-1" aria-hidden="true" style="position:absolute; z-index:1; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
+      <video class="mak-hero-video" ref="{{ videoRef2 }}" src="assets/hero-opt.mp4" poster="assets/image-1-opt.webp" preload="metadata" muted="" loop="" playsinline="" disablepictureinpicture="" disableremoteplayback="" controlslist="nodownload noremoteplayback" tabindex="-1" aria-hidden="true" style="position:absolute; z-index:0; opacity:0; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
     </sc-if>
     <sc-if value="{{ useStatic }}" hint-placeholder-val="{{ false }}">
       <img class="mak-hero-video" src="assets/image-1-opt.webp" alt="" width="848" height="480" fetchpriority="high" style="position:absolute; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12);">
@@ -2208,6 +2212,7 @@ class Component extends DCLogic {
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('keydown', this.onKey);
     document.removeEventListener('click', this.onAnchor); clearTimeout(this.anchT); clearTimeout(this.hashT);
+    if (this._kick) ['touchstart', 'pointerdown', 'scroll', 'visibilitychange', 'pageshow'].forEach(ev => window.removeEventListener(ev, this._kick));
     window.removeEventListener('hashchange', this.goHash); window.removeEventListener('load', this.goHash);
     if (this.syncProj) document.removeEventListener('visibilitychange', this.syncProj);
     if (this.onMove) window.removeEventListener('pointermove', this.onMove);
@@ -2254,6 +2259,17 @@ class Component extends DCLogic {
       v.addEventListener('ended', () => { if (this.mode() === 'pingpong') this.reverse(); });
     }
     const p = v.play(); if (p && p.catch) p.catch(() => {});
+    // Si el navegador bloquea el autoplay, se reintenta en el primer gesto, al volver a la pestaña y al estar listo.
+    if (!this._kick) {
+      this._kick = () => {
+        if (this.dead || document.hidden || this.mode() === 'pingpong') return;
+        const cur = [this.videoRef.current, this.videoRef2.current][this.cur || 0];
+        if (cur && cur.paused) { const q = cur.play(); if (q && q.catch) q.catch(() => {}); }
+      };
+      ['touchstart', 'pointerdown', 'scroll', 'visibilitychange', 'pageshow'].forEach(ev => window.addEventListener(ev, this._kick, { passive: true }));
+      v.addEventListener('canplay', this._kick);
+      v.addEventListener('pause', () => setTimeout(this._kick, 250));
+    }
   }
   crossfadeLoop(a, b) {
     const FADE = 1.2; let fading = false;
