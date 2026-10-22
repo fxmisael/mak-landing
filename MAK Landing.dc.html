@@ -22,7 +22,7 @@ window.__resources={"https://unpkg.com/react@18.3.1/umd/react.production.min.js"
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&amp;family=Sora:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/image-1-opt.jpg" fetchpriority="high" type="image/jpeg">
+<link rel="preload" as="image" href="assets/image-1-opt.webp" fetchpriority="high" type="image/webp">
 <link rel="canonical" href="https://maksistemas.com/">
 <meta property="og:url" content="https://maksistemas.com/">
 <meta property="og:site_name" content="MAK">
@@ -37,6 +37,16 @@ window.__resources={"https://unpkg.com/react@18.3.1/umd/react.production.min.js"
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"MAK","description":"MAK crea productos y soluciones tecnológicas para empresas que quieren evolucionar, en Santo Domingo, R.D.: gestión empresarial, inteligencia artificial para atención al cliente y desarrollo digital.","slogan":"Innovación que impulsa posibilidades","url":"https://maksistemas.com/","image":"https://maksistemas.com/assets/image-1-opt.jpg","email":"info@maksistemas.com","telephone":"+1-787-902-6590","areaServed":{"@type":"Country","name":"República Dominicana"},"address":{"@type":"PostalAddress","addressLocality":"Santo Domingo","addressCountry":"DO"},"knowsLanguage":"es-DO","serviceType":["MAK Business: gestión empresarial","MAK AI: atención al cliente con inteligencia artificial","MAK Web: desarrollo digital"]}</script>
 <style>
+/* Rendimiento: el navegador omite layout y pintura de lo que está bajo el pliegue hasta que se acerca a la pantalla.
+   contain-intrinsic-size = alto del CONTENIDO (sin padding), medido en 390 / 768 / 860 / 1024 / 1280 px; "auto" recuerda el alto real tras el primer render.
+   Si cambia mucho el contenido de una sección, re-medir (ver CLAUDE.md). Además, onAnchor() realinea el destino de un enlace #ancla si la estimación falló. */
+main>section,.mk-foot{content-visibility:auto;contain-intrinsic-size:auto 800px}
+#tecnologia{contain-intrinsic-size:auto 398px}#flujo{contain-intrinsic-size:auto 659px}#proceso{contain-intrinsic-size:auto 410px}#soluciones{contain-intrinsic-size:auto 1729px}#demo{contain-intrinsic-size:auto 1399px}#industrias{contain-intrinsic-size:auto 443px}#proyectos{contain-intrinsic-size:auto 867px}#nosotros{contain-intrinsic-size:auto 1078px}main>section[aria-labelledby="h-faq"]{contain-intrinsic-size:auto 555px}#diagnostico{contain-intrinsic-size:auto 366px}#contacto{contain-intrinsic-size:auto 1093px}.mk-foot{contain-intrinsic-size:auto 469px}
+@media (min-width:768px){#tecnologia{contain-intrinsic-size:auto 332px}#flujo{contain-intrinsic-size:auto 506px}#proceso{contain-intrinsic-size:auto 289px}#soluciones{contain-intrinsic-size:auto 1570px}#demo{contain-intrinsic-size:auto 1189px}#industrias{contain-intrinsic-size:auto 372px}#proyectos{contain-intrinsic-size:auto 926px}#nosotros{contain-intrinsic-size:auto 942px}main>section[aria-labelledby="h-faq"]{contain-intrinsic-size:auto 489px}#diagnostico{contain-intrinsic-size:auto 319px}#contacto{contain-intrinsic-size:auto 976px}.mk-foot{contain-intrinsic-size:auto 263px}}
+@media (min-width:860px){#tecnologia{contain-intrinsic-size:auto 950px}#flujo{contain-intrinsic-size:auto 678px}#proceso{contain-intrinsic-size:auto 345px}#soluciones{contain-intrinsic-size:auto 1624px}#demo{contain-intrinsic-size:auto 1473px}#industrias{contain-intrinsic-size:auto 883px}#proyectos{contain-intrinsic-size:auto 958px}#nosotros{contain-intrinsic-size:auto 1118px}main>section[aria-labelledby="h-faq"]{contain-intrinsic-size:auto 598px}#diagnostico{contain-intrinsic-size:auto 718px}#contacto{contain-intrinsic-size:auto 930px}.mk-foot{contain-intrinsic-size:auto 342px}}
+@media (min-width:1024px){#tecnologia{contain-intrinsic-size:auto 972px}#flujo{contain-intrinsic-size:auto 699px}#proceso{contain-intrinsic-size:auto 338px}#soluciones{contain-intrinsic-size:auto 1241px}#demo{contain-intrinsic-size:auto 1442px}#industrias{contain-intrinsic-size:auto 859px}#proyectos{contain-intrinsic-size:auto 731px}#nosotros{contain-intrinsic-size:auto 1195px}main>section[aria-labelledby="h-faq"]{contain-intrinsic-size:auto 602px}#diagnostico{contain-intrinsic-size:auto 648px}#contacto{contain-intrinsic-size:auto 935px}.mk-foot{contain-intrinsic-size:auto 276px}}
+@media (min-width:1280px){#tecnologia{contain-intrinsic-size:auto 539px}#flujo{contain-intrinsic-size:auto 619px}#proceso{contain-intrinsic-size:auto 323px}#soluciones{contain-intrinsic-size:auto 1241px}#demo{contain-intrinsic-size:auto 1470px}#industrias{contain-intrinsic-size:auto 531px}#proyectos{contain-intrinsic-size:auto 815px}#nosotros{contain-intrinsic-size:auto 1286px}main>section[aria-labelledby="h-faq"]{contain-intrinsic-size:auto 614px}#diagnostico{contain-intrinsic-size:auto 646px}#contacto{contain-intrinsic-size:auto 831px}.mk-foot{contain-intrinsic-size:auto 276px}}
+@media (min-width:768px) and (max-height:560px){#soluciones{contain-intrinsic-size:auto 1573px}#demo{contain-intrinsic-size:auto 1022px}#proyectos{contain-intrinsic-size:auto 887px}#nosotros{contain-intrinsic-size:auto 959px}}
 :root{--bg:#060D1C;--s1:#0B1B35;--s2:#081427;--b1:#0A9BF5;--b2:#0A3FC0;--acc:#3AA8DB;--grad:linear-gradient(135deg,#0A9BF5,#0A3FC0);--t1:rgba(255,255,255,0.85);--t2:rgba(255,255,255,0.7);--t3:rgba(255,255,255,0.62);--line:rgba(255,255,255,0.1);--ease:cubic-bezier(.2,.7,.2,1)}
 html{scroll-behavior:smooth;background:#060D1C;scroll-padding-top:88px}
 video{-webkit-tap-highlight-color:transparent}
@@ -409,7 +419,7 @@ img,video,svg{max-width:100%}
 .mk-ai-orb{position:relative;flex:none;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center}
 .mk-ai-live{position:absolute;top:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#34D399;border:2px solid #0A3FC0;box-sizing:border-box}
 .mk-ai-label{white-space:nowrap}
-.mk-ai-tip{position:relative;max-width:min(272px,calc(100vw - 32px));padding:14px 40px 14px 16px;border-radius:18px 18px 6px 18px;background:rgba(11,27,53,0.92);border:1px solid rgba(58,168,219,0.45);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 14px 36px rgba(0,0,0,0.45);font-size:15px;line-height:1.5;animation:makMsg .5s var(--ease) both}
+.mk-ai-tip{position:absolute;right:0;bottom:calc(100% + 12px);width:max-content;max-width:min(272px,calc(100vw - 32px));padding:14px 40px 14px 16px;border-radius:18px 18px 6px 18px;background:rgba(11,27,53,0.92);border:1px solid rgba(58,168,219,0.45);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 14px 36px rgba(0,0,0,0.45);font-size:15px;line-height:1.5;animation:makMsg .5s var(--ease) both}
 .mk-ai-tip a{display:block;color:rgba(255,255,255,0.92)}
 .mk-ai-tip b{font-weight:600;color:#9FD4F2}
 .mk-ai-x{position:absolute;top:0;right:0;width:44px;height:44px;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.7}
@@ -623,11 +633,11 @@ img,video,svg{max-width:100%}
 <div style="position:relative;">
   <div aria-hidden="true" style="position:sticky; top:0; height:100svh; overflow:hidden; z-index:0; background:#060D1C;">
     <sc-if value="{{ useVideo }}" hint-placeholder-val="{{ true }}">
-      <video class="mak-hero-video" ref="{{ videoRef }}" src="assets/hero.mp4" poster="assets/image-1-opt.jpg" preload="auto" autoplay="" muted="" loop="" playsinline="" disablepictureinpicture="" style="position:absolute; z-index:1; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
-      <video class="mak-hero-video" ref="{{ videoRef2 }}" src="assets/hero.mp4" poster="assets/image-1-opt.jpg" preload="metadata" muted="" loop="" playsinline="" disablepictureinpicture="" style="position:absolute; z-index:0; opacity:0; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
+      <video class="mak-hero-video" ref="{{ videoRef }}" src="assets/hero-opt.mp4" poster="assets/image-1-opt.webp" preload="auto" autoplay="" muted="" loop="" playsinline="" disablepictureinpicture="" style="position:absolute; z-index:1; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
+      <video class="mak-hero-video" ref="{{ videoRef2 }}" src="assets/hero-opt.mp4" poster="assets/image-1-opt.webp" preload="metadata" muted="" loop="" playsinline="" disablepictureinpicture="" style="position:absolute; z-index:0; opacity:0; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12); transition:opacity 1.2s ease; backface-visibility:hidden;"></video>
     </sc-if>
     <sc-if value="{{ useStatic }}" hint-placeholder-val="{{ false }}">
-      <img class="mak-hero-video" src="assets/image-1-opt.jpg" alt="" width="848" height="480" fetchpriority="high" style="position:absolute; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12);">
+      <img class="mak-hero-video" src="assets/image-1-opt.webp" alt="" width="848" height="480" fetchpriority="high" style="position:absolute; top:{{ vTop }}; left:{{ vLeft }}; width:{{ vW }}; height:{{ vH }}; transform:{{ vTf }}; transform-origin:{{ vOrigin }}; object-fit:cover; filter:contrast(1.06) saturate(1.12);">
     </sc-if>
     <div class="mak-scrim" aria-hidden="true" style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(6,13,28,0.62), rgba(6,13,28,0) 48%);"></div>
     <div style="position:absolute; left:0; right:0; top:0; height:160px; background:linear-gradient(180deg, rgba(6,13,28,0.6), rgba(6,13,28,0));"></div>
@@ -1267,7 +1277,7 @@ img,video,svg{max-width:100%}
 
 <!-- CTA FINAL / CONTACTO -->
 <section class="mk-tight" id="contacto" aria-labelledby="h-contacto" style="position:relative; overflow:hidden; padding:clamp(80px,12vw,160px) clamp(20px,4vw,40px);">
-  <img src="assets/image-2-opt.jpg" alt="" loading="lazy" decoding="async" width="848" height="480" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">
+  <img loading="lazy" decoding="async" src="assets/image-2-opt.webp" alt="" width="848" height="480" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">
   <div aria-hidden="true" style="position:absolute; inset:0; background:rgba(6,13,28,0.85);"></div>
   <div aria-hidden="true" style="position:absolute; left:0; right:0; top:0; height:30%; background:linear-gradient(180deg, #060D1C, rgba(6,13,28,0));"></div>
   <div style="position:relative; max-width:1240px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; gap:48px;">
@@ -1481,10 +1491,10 @@ const MISION = 'Desarrollar tecnología innovadora, accesible y funcional que pe
 const VISION = 'Convertir a MAK en una empresa tecnológica de referencia, reconocida por desarrollar productos inteligentes, impulsar la transformación empresarial y crear soluciones capaces de evolucionar con las necesidades del mercado.';
 
 const PROJECTS = [
-  { name: 'Asian Palace', kind: 'Restaurante · Gazcue, Santo Domingo', status: 'Proyecto real · publicado', url: '', desk: 'assets/proyectos/asian-desktop.jpg', mob: 'assets/proyectos/asian-movil.jpg', deskVid: 'assets/proyectos/asian-desktop.mp4', mobVid: 'assets/proyectos/asian-movil.mp4',
+  { name: 'Asian Palace', kind: 'Restaurante · Gazcue, Santo Domingo', status: 'Proyecto real · publicado', url: '', desk: 'assets/proyectos/asian-desktop.webp', mob: 'assets/proyectos/asian-movil.webp', deskVid: 'assets/proyectos/asian-desktop.mp4', mobVid: 'assets/proyectos/asian-movil.mp4',
     desc: 'Sitio informativo con video de portada, menú, ubicación y pedidos que salen por WhatsApp, teléfono o apps de delivery.',
     feats: ['Video de portada', 'Menú y ubicación', 'Pedidos por WhatsApp', 'Adaptado a celular', 'Páginas legales'] },
-  { name: 'Hermanos Britos', kind: 'Servicio técnico de montacargas · R.D.', status: 'Proyecto real · publicado', url: 'https://hermanosbritos.com', desk: 'assets/proyectos/hb-desktop.jpg', mob: 'assets/proyectos/hb-movil.jpg', deskVid: 'assets/proyectos/hb-desktop.mp4', mobVid: 'assets/proyectos/hb-movil.mp4',
+  { name: 'Hermanos Britos', kind: 'Servicio técnico de montacargas · R.D.', status: 'Proyecto real · publicado', url: 'https://hermanosbritos.com', desk: 'assets/proyectos/hb-desktop.webp', mob: 'assets/proyectos/hb-movil.webp', deskVid: 'assets/proyectos/hb-desktop.mp4', mobVid: 'assets/proyectos/hb-movil.mp4',
     desc: 'Web institucional de una empresa industrial: servicios, trabajos, contacto y solicitud de inspección, con analítica solo después del consentimiento.',
     feats: ['Video de portada', 'Solicitud de servicio', 'Analítica con consentimiento', 'Adaptada a celular'] }
 ];
@@ -2105,6 +2115,20 @@ class Component extends DCLogic {
     window.addEventListener('resize', this.onResize);
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('keydown', this.onKey);
+    // content-visibility estima el alto de las secciones aún no vistas: tras saltar a un #ancla se realinea si quedó desplazado.
+    this.onAnchor = e => {
+      const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+      const el = document.getElementById(a.getAttribute('href').slice(1)); if (!el) return;
+      let tries = 0;
+      const fix = () => {
+        window.removeEventListener('scrollend', fix); clearTimeout(this.anchT);
+        const de = document.documentElement, pad = (parseFloat(getComputedStyle(de).scrollPaddingTop) || 0) + (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+        const atEnd = window.scrollY + window.innerHeight >= de.scrollHeight - 2;
+        if (!atEnd && window.scrollY > 0 && Math.abs(el.getBoundingClientRect().top - pad) > 8 && tries++ < 3) { el.scrollIntoView({ behavior: 'instant', block: 'start' }); this.anchT = setTimeout(fix, 150); }
+      };
+      window.addEventListener('scrollend', fix, { once: true }); clearTimeout(this.anchT); this.anchT = setTimeout(fix, 1600);
+    };
+    document.addEventListener('click', this.onAnchor);
     this.setState({ reduced, mobile: document.documentElement.clientWidth < 860 }, () => { this.setupVideo(); this.handleScroll(); this.setupCore(); });
     this.setupReveal(reduced);
     // Botón flotante de MAK AI: se esconde mientras la demo está a la vista y, una vez por sesión, muestra una invitación.
@@ -2125,6 +2149,7 @@ class Component extends DCLogic {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('keydown', this.onKey);
+    document.removeEventListener('click', this.onAnchor); clearTimeout(this.anchT);
     if (this.syncProj) document.removeEventListener('visibilitychange', this.syncProj);
     if (this.onMove) window.removeEventListener('pointermove', this.onMove);
     if (this.onVis) document.removeEventListener('visibilitychange', this.onVis);
@@ -2133,7 +2158,7 @@ class Component extends DCLogic {
     clearTimeout(this.ft); clearTimeout(this.dt); clearTimeout(this.pt); clearInterval(this.recTick); clearTimeout(this.tipT); clearTimeout(this.tipT2); if (this.demoIO) this.demoIO.disconnect();
     if (this.rec) this.rec.stream.getTracks().forEach(t => t.stop());
     if (this.player) this.player.pause();
-    this.io && this.io.disconnect(); this.pio && this.pio.disconnect(); this.cio && this.cio.disconnect();
+    this.io && this.io.disconnect(); this.pio && this.pio.disconnect(); this.nio && this.nio.disconnect(); this.cio && this.cio.disconnect();
   }
   // El runtime invoca componentDidUpdate(prevProps) con un solo argumento,
   // por eso el estado previo se guarda en la instancia.
@@ -2357,13 +2382,15 @@ class Component extends DCLogic {
     this.syncProj = () => {
       const v = st.querySelector('video'); if (!v) return;
       v.muted = true; v.playsInline = true;
-      if (v.dataset.poster && !v.getAttribute('poster')) v.setAttribute('poster', v.dataset.poster);
+      if (this.stageNear && v.dataset.poster && !v.getAttribute('poster')) v.setAttribute('poster', v.dataset.poster);
       if (this.stageVis && !document.hidden) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause();
     };
     document.addEventListener('visibilitychange', this.syncProj);
     if ('IntersectionObserver' in window) {
       this.pio = new IntersectionObserver(es => { this.stageVis = es[0].isIntersecting; this.syncProj(); }, { threshold: 0.25 });
       this.pio.observe(st);
+      this.nio = new IntersectionObserver(es => { this.stageNear = es[0].isIntersecting; if (this.stageNear) this.syncProj(); }, { rootMargin: '700px 0px' });
+      this.nio.observe(st);
     }
   }
 

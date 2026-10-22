@@ -16,14 +16,14 @@ Soluciones actuales: MAK Business, MAK AI y MAK Web (catálogo que crece: ver `S
 | `support.js` | Runtime de Claude Design (generado). **Ver "Parches al runtime"** |
 | `vendor/` | React 18.3.1 UMD servido desde nuestro dominio |
 | `terminos.html` / `privacidad.html` | Páginas legales (HTML plano, sin runtime) |
-| `assets/` | `hero.mp4`, `image-1-opt.jpg` (póster), `image-2-opt.jpg` (fondo contacto) |
-| `assets/proyectos/` | Clips `.mp4` (H.264, sin audio) + póster `.jpg` de Asian Palace y Hermanos Britos, escritorio y celular |
+| `assets/` | `hero-opt.mp4` (video del hero, 560 KB, sin la estrella del generador), `image-1-opt.webp` (póster), `image-2-opt.webp` (fondo contacto). `hero.mp4` y los `-opt.jpg` quedan como respaldo y para `og:image` (los rastreadores sociales piden JPG); **no se despliegan** salvo los `.jpg` |
+| `assets/proyectos/` | Clips `.mp4` (H.264, sin audio) + póster `.webp` (el `.jpg` queda de respaldo) de Asian Palace y Hermanos Britos, escritorio y celular |
 | `api/demo.js` | Función de Vercel: IA real de la demo (OpenRouter). Ver «IA real de la demo» |
 | `vercel.json` | Cabeceras de seguridad + CSP + `cleanUrls` + `maxDuration` de la función |
 | `favicon.svg`, `apple-touch-icon.png` | Íconos |
 | `uploads/` | Originales pesados. **No se despliegan** |
 
-Los `.png` originales en `assets/` quedan como respaldo; el HTML referencia los `-opt.jpg`.
+Los `.png` originales en `assets/` quedan como respaldo; el HTML referencia los `.webp`.
 
 ---
 
@@ -257,3 +257,22 @@ Capas: `html{overflow-x:clip}` + `.mak-root{overflow-x:clip}` + `body{touch-acti
 `-webkit-text-size-adjust:100%`. Los rieles **no** usan márgenes negativos. No usar `maximum-scale` (bloquea el zoom accesible).
 Evitar nombres de clase genéricos: `.mk-cap` ya existía (pie de foto) y rompió una tarjeta; las tarjetas nuevas son `.mk-card`.
 Playwright no corre WebKit en esta Mac (macOS 12): la verificación en iPhone real es manual.
+
+## Rendimiento (2026-10-21)
+
+Medido en móvil emulado (412×823, 4G 1,6 Mbps/150 ms, CPU 4× más lenta), HEAD → actual: FCP 3,1 → 2,5 s · LCP 3,4 → 2,9 s ·
+CLS 0,087 → 0,01 · TBT 2,3 → 1,8 s · peso 3,5 → 1,3 MB. El FCP aún supera la meta de 1,8 s: la página se pinta con React en el cliente.
+
+- **`content-visibility:auto`** en `main>section` y `.mk-foot` (bloque «Rendimiento» al inicio del `<style>`). Bajó el layout inicial de 1,8 s a 0,3 s.
+  `contain-intrinsic-size` es el alto del **contenido sin padding**, medido en 390/768/860/1024/1280 px. **Si cambias mucho el contenido
+  de una sección, re-medir**: se carga la página, se recorre completa y se lee `alto − padding` de cada sección. Si no se re-mide, el
+  salto a `#ancla` queda desplazado; `onAnchor()` (en `componentDidMount`) lo realinea tras `scrollend`, pero la estimación debe estar cerca.
+- Imágenes diferidas: poner `loading="lazy"` **antes** de `src` (el runtime fija atributos en orden y, si `src` va primero, descarga al instante).
+  El póster de los clips de proyectos se aplica solo cuando el escenario está a ≤700 px (`stageNear`).
+- `/assets/*` es `immutable` 1 año: **un archivo cambiado lleva nombre nuevo** (`hero-opt.mp4`, no se sobrescribe `hero.mp4`). `/vendor/` va con 7 días + `stale-while-revalidate`.
+- El globo del botón flotante de MAK AI es `position:absolute` a propósito: en flujo empujaba el contenedor y daba CLS 0,11.
+- Video del hero recodificado con `ffmpeg-static` (en carpeta temporal): High profile, `-crf 25 -preset veryslow -g 48 -movflags +faststart`, 848×480, 10 s
+  (el crossfade depende de la duración). La estrella ✦ del generador se quitó con `-vf delogo=x=744:y=376:w=52:h=52`.
+- Probado y descartado: `defer` en `support.js` (riesgo de ver el marcado crudo, sin ganancia); precargar las fuentes (compite con el JS crítico).
+- **Pendiente, a decisión de Misael:** autoalojar Sora/Inter (82 KB; quita el CSS bloqueante de Google y deja cero orígenes externos).
+  Obliga a editar `privacidad.html` (§ de Google LLC y de comunicaciones técnicas) y `terminos.html` (terceros) y a ajustar la CSP.
